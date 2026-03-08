@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}AI Financial Assistant - InvestIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        height: calc(100vh - 250px);
+        min-height: 500px;
+    }
+
+    .message-bubble {
+        max-width: 80%;
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        line-height: 1.5;
+    }
+
+    .message-user {
+        background-color: #2563eb;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 0.25rem;
+    }
+
+    .message-ai {
+        background-color: #f3f4f6;
+        color: #1f2937;
+        align-self: flex-start;
+        border-bottom-left-radius: 0.25rem;
+        white-space: pre-wrap;
+    }
+
+    .typing-indicator {
+        display: none;
+        align-self: flex-start;
+        background-color: #f3f4f6;
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background-color: #9ca3af;
+        border-radius: 50%;
+        margin-right: 3px;
+        animation: wave 1.3s linear infinite;
+    }
+
+    .dot:nth-child(2) {
+        animation-delay: -1.1s;
+    }
+
+    .dot:nth-child(3) {
+        animation-delay: -0.9s;
+    }
+
+    @keyframes wave {
+
+        0%,
+        60%,
+        100% {
+            transform: translateY(0);
+        }
+
+        30% {
+            transform: translateY(-4px);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 flex flex-col chat-container">
+        <!-- Header -->
+        <div class="bg-gray-50 border-b border-gray-100 p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-gray-900">AI Financial Assistant</h2>
+                    <p class="text-xs text-green-600 flex items-center">
+                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        Online & Ready to Help
+                    </p>
+                </div>
+            </div>
+            <div class="text-xs text-gray-500 italic">
+                Personalized Assistant for {{ current_user.first_name or current_user.username }}
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-2">
+            <!-- Welcome Message -->
+            <div class="message-bubble message-ai">
+                Namaste! I am your InvestIQ AI Assistant. I can help you with:
+                • Understanding investment options in India
+                • Analyzing your current portfolio
+                • Financial planning based on your risk profile
+
+                How can I assist you today?
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typing-indicator" class="typing-indicator message-bubble">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+
+        <!-- Error Banner -->
+        <div id="error-banner" class="hidden bg-red-50 border-t border-red-100 p-3 text-red-700 text-sm text-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="error-message">Connection lost. Please try again.</span>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-white border-t border-gray-100">
+            <form id="chat-form" class="flex space-x-3">
+                <input type="text" id="user-input" autocomplete="off"
+                    class="flex-1 border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-smooth"
+                    placeholder="Ask about your investments or general finance...">
+                <button type="submit" id="send-btn" class="btn-primary flex items-center justify-center min-w-[100px]">
+                    <span>Send</span>
+                    <i class="fas fa-paper-plane ml-2"></i>
+                </button>
+            </form>
+            <p class="text-[10px] text-gray-400 mt-2 text-center">
+                InvestIQ AI provides information, not regulated financial advice. Please consult a SEBI-registered
+                advisor for personal decisions.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const typingIndicator = document.getElementById('typing-indicator');
+    const errorBanner = document.getElementById('error-banner');
+    const errorMessage = document.getElementById('error-message');
+    const sendBtn = document.getElementById('send-btn');
+
+    let chatHistory = [];
+
+    function appendMessage(role, content) {
+        const bubble = document.createElement('div');
+        bubble.className = `message-bubble message-${role === 'user' ? 'user' : 'ai'}`;
+        bubble.textContent = content;
+
+        // Insert before typing indicator
+        chatMessages.insertBefore(bubble, typingIndicator);
+
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Update history
+        chatHistory.push({ role, content });
+        if (chatHistory.length > 6) { 
+            chatHistory = chatHistory.slice(-6);
+        }
+    }
+
+    function showError(msg) {
+        errorMessage.textContent = msg;
+        errorBanner.classList.remove('hidden');
+        setTimeout(() => {
+            errorBanner.classList.add('hidden');
+        }, 5000);
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = userInput.value.trim();
+
+        if (!message) return;
+
+        // Clear input and disable
+        userInput.value = '';
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        // Show user message
+        appendMessage('user', message);
+
+        // Show typing indicator
+        typingIndicator.style.display = 'block';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+            const response = await fetch('/chat/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    history: chatHistory
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                appendMessage('ai', data.response);
+            } else {
+                showError(data.error || 'AI assistant is temporarily unavailable. Please try again later.');
+                appendMessage('ai', 'AI assistant is temporarily unavailable. Please try again later.');
+            }
+        } catch (error) {
+            console.error('Chat Error:', error);
+            showError('Network error. Please check your connection.');
+        } finally {
+            typingIndicator.style.display = 'none';
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            userInput.focus();
+        }
+    });
+
+    // Auto-focus input on load
+    window.addEventListener('load', () => userInput.focus());
+</script>
+{% endblock %}

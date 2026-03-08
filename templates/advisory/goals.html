@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Financial Goals - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="{{ url_for('advisory.advisory_dashboard') }}" class="text-blue-400 hover:text-blue-300 mb-4 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-white mb-2">Financial Goals</h1>
+                    <p class="text-slate-400">Track and achieve your financial objectives</p>
+                </div>
+                <a href="{{ url_for('advisory.create_goal') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-smooth">
+                    <i class="fas fa-plus mr-2"></i> Add New Goal
+                </a>
+            </div>
+        </div>
+
+        {% if goals %}
+        <div class="space-y-6">
+            {% for goal in goals %}
+            <div class="bg-slate-800 rounded-lg border border-slate-700 card-shadow overflow-hidden">
+                <div class="bg-slate-700 px-6 py-4 border-b border-slate-600">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">{{ goal.goal_name }}</h2>
+                            <p class="text-slate-400 text-sm">{{ goal.goal_category|title }} • Target: {{ goal.target_date.strftime('%d %b %Y') }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-white">₹{{ (goal.target_amount_inr)|int|string|reverse|batch(2)|map('reverse')|join(',') }}</p>
+                            <p class="text-slate-400 text-sm">Target Amount</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div>
+                            <p class="text-slate-400 text-sm mb-2">Progress</p>
+                            <div class="flex items-end space-x-1">
+                                <p class="text-3xl font-bold text-blue-400">{{ goal.progress_percentage|int }}</p>
+                                <p class="text-slate-400 mb-1">%</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm mb-2">Saved Amount</p>
+                            <p class="text-2xl font-bold text-green-400">₹{{ goal.current_amount_inr|int }}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm mb-2">Remaining</p>
+                            <p class="text-2xl font-bold text-yellow-400">₹{{ (goal.target_amount_inr - goal.current_amount_inr)|int }}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm mb-2">Days Remaining</p>
+                            <p class="text-2xl font-bold {% if goal.days_remaining > 0 %}text-slate-300{% else %}text-red-400{% endif %}">
+                                {% if goal.days_remaining > 0 %}{{ goal.days_remaining }}{% else %}Expired{% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-6">
+                        <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-500 to-blue-400 h-3 transition-all" style="width: {{ goal.progress_percentage|int }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Goal Details -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <div class="bg-slate-700/50 p-3 rounded">
+                            <p class="text-slate-400 text-xs">Priority</p>
+                            <p class="text-white font-semibold">{{ goal.priority|title }}</p>
+                        </div>
+                        <div class="bg-slate-700/50 p-3 rounded">
+                            <p class="text-slate-400 text-xs">Monthly Investment</p>
+                            <p class="text-white font-semibold">₹{{ (goal.monthly_investment_required or 0)|int }}</p>
+                        </div>
+                        <div class="bg-slate-700/50 p-3 rounded">
+                            <p class="text-slate-400 text-xs">Expected Return Rate</p>
+                            <p class="text-white font-semibold">{{ (goal.expected_return_rate or 0)|round(1) }}%</p>
+                        </div>
+                        <div class="bg-slate-700/50 p-3 rounded">
+                            <p class="text-slate-400 text-xs">Status</p>
+                            <p class="text-white font-semibold">{% if goal.is_active %}Active{% else %}Achieved{% endif %}</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center space-x-3">
+                        <a href="{{ url_for('advisory.goal_achievement_plan', goal_id=goal.id) }}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-smooth text-center">
+                            <i class="fas fa-chart-line mr-2"></i> View Plan
+                        </a>
+                        <button onclick="updateProgress({{ goal.id }})" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-smooth">
+                            <i class="fas fa-plus mr-2"></i> Update Progress
+                        </button>
+                        <button class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg transition-smooth">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-slate-800 rounded-lg p-12 border border-slate-700 text-center card-shadow">
+            <i class="fas fa-bullseye text-6xl text-slate-600 mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">No Financial Goals Yet</h2>
+            <p class="text-slate-400 mb-6">Start building your financial future by creating your first goal</p>
+            <a href="{{ url_for('advisory.create_goal') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-smooth">
+                <i class="fas fa-plus mr-2"></i> Create Your First Goal
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+async function updateProgress(goalId) {
+    const currentAmount = prompt('Enter current saved amount (₹):');
+    if (currentAmount !== null) {
+        try {
+            const response = await fetch(`{{ url_for('advisory.update_goal_progress', goal_id='ID') }}`.replace('ID', goalId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    current_amount: parseFloat(currentAmount)
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(`Progress updated! ${data.progress.toFixed(1)}% complete`);
+                location.reload();
+            } else {
+                alert('Failed to update progress');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error updating progress');
+        }
+    }
+}
+</script>
+{% endblock %}

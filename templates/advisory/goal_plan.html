@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Goal Achievement Plan - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="{{ url_for('advisory.manage_goals') }}" class="text-blue-400 hover:text-blue-300 mb-4 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Goals
+            </a>
+            <h1 class="text-4xl font-bold text-white mb-2">{{ goal.goal_name }} - Achievement Plan</h1>
+            <p class="text-slate-400">Personalized strategy to reach ₹{{ goal.target_amount_inr|int }} by {{ goal.target_date.strftime('%d %b %Y') }}</p>
+        </div>
+
+        <!-- Goal Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Target Amount</p>
+                <p class="text-2xl font-bold text-white">₹{{ goal.target_amount_inr|int }}</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Current Savings</p>
+                <p class="text-2xl font-bold text-green-400">₹{{ goal.current_amount_inr|int }}</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Amount Needed</p>
+                <p class="text-2xl font-bold text-yellow-400">₹{{ (goal.target_amount_inr - goal.current_amount_inr)|int }}</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Time Remaining</p>
+                <p class="text-2xl font-bold text-blue-400">{{ goal.days_remaining }} days</p>
+            </div>
+        </div>
+
+        {% if session %}
+        <!-- AI-Generated Plan -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Feasibility Assessment -->
+                {% if session.advisor_response %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Feasibility Assessment</h2>
+                    <p class="text-slate-300 leading-relaxed">
+                        {{ session.advisor_response.get('feasibility', 'Achievable goal') }}
+                    </p>
+                </div>
+
+                <!-- Key Findings -->
+                {% if session.key_findings %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Key Findings</h2>
+                    <div class="space-y-3">
+                        {% for finding in session.key_findings %}
+                        <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-400">
+                            <p class="text-slate-200">{{ finding }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Action Items -->
+                {% if session.action_items %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Action Plan</h2>
+                    <div class="space-y-3">
+                        {% for item in session.action_items %}
+                        <div class="flex items-start bg-slate-700/50 p-4 rounded-lg">
+                            <input type="checkbox" class="mt-1 mr-4 w-4 h-4 rounded cursor-pointer">
+                            <p class="text-slate-200">{{ item }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Column - Investment Strategy -->
+            <div class="space-y-6">
+                <!-- Investment Strategy -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-lg font-bold text-white mb-4">Investment Strategy</h2>
+                    <div class="space-y-4">
+                        {% if goal.allocation_strategy %}
+                            {% for asset_class, percentage in goal.allocation_strategy.items() %}
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-slate-300">{{ asset_class|title }}</span>
+                                    <span class="text-white font-bold">{{ percentage }}%</span>
+                                </div>
+                                <div class="w-full bg-slate-700 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ percentage }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <p class="text-slate-400 text-sm">Allocation strategy will be shown here</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Monthly Investment -->
+                <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-lg p-6 card-shadow text-white">
+                    <p class="text-sm opacity-90">Monthly Investment Required</p>
+                    <p class="text-4xl font-bold">₹{{ (goal.monthly_investment_required or 0)|int }}</p>
+                    <p class="text-sm opacity-90 mt-2">Via SIP for optimal returns</p>
+                </div>
+
+                <!-- Expected Return Rate -->
+                <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg p-6 card-shadow text-white">
+                    <p class="text-sm opacity-90">Expected Annual Return</p>
+                    <p class="text-4xl font-bold">{{ (goal.expected_return_rate or 0)|round(1) }}%</p>
+                    <p class="text-xs opacity-90 mt-2">Based on recommended allocation</p>
+                </div>
+
+                <!-- Confidence Score -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <p class="text-slate-400 text-sm mb-3">Plan Confidence Score</p>
+                    <div class="flex items-end space-x-2">
+                        <p class="text-4xl font-bold text-blue-400">{{ session.confidence_score|int }}%</p>
+                    </div>
+                    <div class="bg-slate-700 rounded-full h-2 mt-3">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all" style="width: {{ session.confidence_score }}%"></div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2">High confidence in plan success</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        {% if session.recommendations %}
+        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow mb-8">
+            <h2 class="text-xl font-bold text-white mb-4">Investment Recommendations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for rec in session.recommendations %}
+                <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-green-400">
+                    <p class="text-slate-200">{{ rec }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- Milestone Tracking -->
+        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+            <h2 class="text-xl font-bold text-white mb-4">Milestone Progress</h2>
+            <div class="space-y-4">
+                <div class="flex items-start">
+                    <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                    <div class="flex-1">
+                        <p class="text-white font-semibold">25% Milestone</p>
+                        <p class="text-slate-400 text-sm">₹{{ (goal.target_amount_inr * 0.25)|int }}</p>
+                        <div class="bg-slate-700 rounded-full h-2 mt-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: {% if goal.current_amount_inr >= goal.target_amount_inr * 0.25 %}100{% else %}{{ (goal.current_amount_inr / (goal.target_amount_inr * 0.25) * 100)|int }}{% endif %}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                    <div class="flex-1">
+                        <p class="text-white font-semibold">50% Milestone</p>
+                        <p class="text-slate-400 text-sm">₹{{ (goal.target_amount_inr * 0.5)|int }}</p>
+                        <div class="bg-slate-700 rounded-full h-2 mt-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: {% if goal.current_amount_inr >= goal.target_amount_inr * 0.5 %}100{% else %}{{ (goal.current_amount_inr / (goal.target_amount_inr * 0.5) * 100)|int }}{% endif %}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                    <div class="flex-1">
+                        <p class="text-white font-semibold">75% Milestone</p>
+                        <p class="text-slate-400 text-sm">₹{{ (goal.target_amount_inr * 0.75)|int }}</p>
+                        <div class="bg-slate-700 rounded-full h-2 mt-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: {% if goal.current_amount_inr >= goal.target_amount_inr * 0.75 %}100{% else %}{{ (goal.current_amount_inr / (goal.target_amount_inr * 0.75) * 100)|int }}{% endif %}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
+                    <div class="flex-1">
+                        <p class="text-white font-semibold">Goal Achieved!</p>
+                        <p class="text-slate-400 text-sm">₹{{ goal.target_amount_inr|int }}</p>
+                        <div class="bg-slate-700 rounded-full h-2 mt-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: {% if goal.current_amount_inr >= goal.target_amount_inr %}100{% else %}{{ (goal.current_amount_inr / goal.target_amount_inr * 100)|int }}{% endif %}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

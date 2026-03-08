@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex justify-between items-center">
+        <h1 class="text-4xl font-bold text-gray-900">Your Portfolios</h1>
+        <a href="{{ url_for('dashboard.create_portfolio') }}" class="btn-primary">
+            <i class="fas fa-plus mr-2"></i>Create Portfolio
+        </a>
+    </div>
+</div>
+
+{% if portfolios %}
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for portfolio in portfolios %}
+    <div class="bg-white rounded-xl card-shadow p-6 hover:shadow-lg transition-smooth cursor-pointer">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900">{{ portfolio.name }}</h3>
+                <p class="text-sm text-gray-500">{{ portfolio.holdings.count() }} holdings</p>
+            </div>
+            <div class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                <i class="fas fa-briefcase text-lg"></i>
+            </div>
+        </div>
+
+        <p class="text-gray-600 text-sm mb-4">{{ portfolio.description or 'No description' }}</p>
+
+        <div class="mb-4">
+            <p class="text-2xl font-bold text-gray-900">₹{{ "%.2f"|format(portfolio.get_current_value()) }}</p>
+            <p class="text-sm text-gray-500">Total Value</p>
+        </div>
+
+        <a href="/dashboard/portfolio/{{ portfolio.id }}"
+            class="text-blue-600 hover:text-blue-700 font-semibold text-sm">
+            View Details <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-xl card-shadow p-12 text-center">
+    <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+    <h3 class="text-xl font-bold text-gray-900 mb-2">No Portfolios Yet</h3>
+    <p class="text-gray-600 mb-6">Create your first portfolio to start tracking your investments.</p>
+    <a href="{{ url_for('dashboard.create_portfolio') }}" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Create Portfolio
+    </a>
+</div>
+{% endif %}
+{% endblock %}

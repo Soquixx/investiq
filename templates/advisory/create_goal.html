@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Create Financial Goal - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <div class="mb-8">
+            <a href="{{ url_for('advisory.manage_goals') }}" class="text-blue-400 hover:text-blue-300 mb-4 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Goals
+            </a>
+            <h1 class="text-4xl font-bold text-white mb-2">Create Financial Goal</h1>
+            <p class="text-slate-400">Set up a new financial goal and get an AI-powered achievement plan</p>
+        </div>
+
+        <div class="bg-slate-800 rounded-lg border border-slate-700 card-shadow p-8">
+            <form id="goalForm">
+                <!-- Goal Name -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2">Goal Name</label>
+                    <input type="text" name="goal_name" placeholder="e.g., Home Purchase, Child's Education, Retirement" 
+                           class="w-full bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth"
+                           required>
+                </div>
+
+                <!-- Goal Category -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2">Goal Category</label>
+                    <select name="goal_category" class="w-full bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth" required>
+                        <option value="">Select a category</option>
+                        <option value="retirement">Retirement</option>
+                        <option value="education">Education</option>
+                        <option value="home">Home Purchase</option>
+                        <option value="wedding">Wedding</option>
+                        <option value="vacation">Vacation</option>
+                        <option value="car">Car Purchase</option>
+                        <option value="emergency">Emergency Fund</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Target Amount -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2">Target Amount (₹)</label>
+                    <input type="number" name="target_amount" placeholder="Enter target amount" 
+                           class="w-full bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth"
+                           step="1000" required>
+                </div>
+
+                <!-- Current Amount -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2">Current Amount Saved (₹)</label>
+                    <input type="number" name="current_amount" placeholder="0" 
+                           class="w-full bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth"
+                           step="1000" value="0">
+                </div>
+
+                <!-- Target Date -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2">Target Date</label>
+                    <input type="date" name="target_date" 
+                           class="w-full bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth"
+                           required>
+                </div>
+
+                <!-- Priority -->
+                <div class="mb-6">
+                    <label class="block text-white font-semibold mb-2">Priority Level</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center bg-slate-700 p-3 rounded-lg cursor-pointer hover:bg-slate-600 transition-smooth">
+                            <input type="radio" name="priority" value="low" class="mr-3">
+                            <span class="text-white">Low Priority</span>
+                        </label>
+                        <label class="flex items-center bg-slate-700 p-3 rounded-lg cursor-pointer hover:bg-slate-600 transition-smooth">
+                            <input type="radio" name="priority" value="medium" class="mr-3" checked>
+                            <span class="text-white">Medium Priority</span>
+                        </label>
+                        <label class="flex items-center bg-slate-700 p-3 rounded-lg cursor-pointer hover:bg-slate-600 transition-smooth">
+                            <input type="radio" name="priority" value="high" class="mr-3">
+                            <span class="text-white">High Priority</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-4 mb-6">
+                    <p class="text-blue-200 text-sm">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        After creating this goal, you'll receive an AI-powered achievement plan with investment recommendations and monthly savings targets.
+                    </p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-smooth">
+                        <i class="fas fa-check mr-2"></i> Create Goal
+                    </button>
+                    <a href="{{ url_for('advisory.manage_goals') }}" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition-smooth text-center">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+
+            <!-- Loading Indicator -->
+            <div id="loadingState" class="hidden text-center py-8">
+                <div class="animate-spin inline-block">
+                    <i class="fas fa-spinner text-4xl text-blue-400"></i>
+                </div>
+                <p class="text-white mt-4">Creating your goal and generating achievement plan...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('goalForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = {
+        goal_name: document.querySelector('input[name="goal_name"]').value,
+        goal_category: document.querySelector('select[name="goal_category"]').value,
+        target_amount: document.querySelector('input[name="target_amount"]').value,
+        current_amount: document.querySelector('input[name="current_amount"]').value,
+        target_date: document.querySelector('input[name="target_date"]').value,
+        goal_type: 'financial',
+        priority: document.querySelector('input[name="priority"]:checked').value
+    };
+
+    // Show loading state
+    document.getElementById('goalForm').parentElement.classList.add('hidden');
+    document.getElementById('loadingState').classList.remove('hidden');
+
+    try {
+        const response = await fetch('{{ url_for("advisory.create_goal") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create goal');
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Redirect to goal plan
+            window.location.href = `{{ url_for('advisory.goal_achievement_plan', goal_id='ID') }}`.replace('ID', data.goal_id);
+        } else {
+            throw new Error(data.error || 'Failed to create goal');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(`Error: ${error.message}`);
+        document.getElementById('goalForm').parentElement.classList.remove('hidden');
+        document.getElementById('loadingState').classList.add('hidden');
+    }
+});
+
+// Set minimum date to today
+document.querySelector('input[name="target_date"]').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

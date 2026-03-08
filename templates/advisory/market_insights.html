@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Market Insights - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="{{ url_for('advisory.advisory_dashboard') }}" class="text-blue-400 hover:text-blue-300 mb-4 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+            <h1 class="text-4xl font-bold text-white mb-2">Market Insights & Analysis</h1>
+            <p class="text-slate-400">Real-time market analysis and implications for your portfolio</p>
+        </div>
+
+        {% if market_data and insights %}
+        <div class="space-y-6">
+            <!-- Market Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Market Sentiment -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <p class="text-slate-400 text-sm mb-2">Market Sentiment</p>
+                    <p class="text-3xl font-bold {% if market_data.sentiment == 'bullish' %}text-green-400{% elif market_data.sentiment == 'bearish' %}text-red-400{% else %}text-yellow-400{% endif %}">
+                        {{ market_data.sentiment|capitalize }}
+                    </p>
+                    <p class="text-slate-400 text-xs mt-2">
+                        <i class="fas fa-clock mr-1"></i> {{ market_data.timestamp | replace('T', ' ')[:16] }}
+                    </p>
+                </div>
+
+                <!-- Volatility Level -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <p class="text-slate-400 text-sm mb-2">Market Volatility</p>
+                    <p class="text-3xl font-bold {% if market_data.volatility == 'high' %}text-red-400{% elif market_data.volatility == 'medium' %}text-yellow-400{% else %}text-green-400{% endif %}">
+                        {{ market_data.volatility|capitalize }}
+                    </p>
+                </div>
+
+                <!-- Market Strength -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <p class="text-slate-400 text-sm mb-2">Market Trend</p>
+                    <p class="text-3xl font-bold text-blue-400">
+                        {% if market_data.sentiment == 'bullish' %}<i class="fas fa-arrow-up"></i>{% elif market_data.sentiment == 'bearish' %}<i class="fas fa-arrow-down"></i>{% else %}<i class="fas fa-arrows-alt-h"></i>{% endif %}
+                        Neutral
+                    </p>
+                </div>
+            </div>
+
+            <!-- Index Performance -->
+            {% if market_data.nifty50 or market_data.sensex %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% if market_data.nifty50 %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">NIFTY 50</h2>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-400 text-sm mb-2">Current Level</p>
+                            <p class="text-3xl font-bold text-white">{{ market_data.nifty50.get('change', 'N/A') }}%</p>
+                        </div>
+                        <div class="text-5xl {% if market_data.nifty50.get('change', 0) > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if market_data.nifty50.get('change', 0) > 0 %}<i class="fas fa-arrow-up"></i>{% else %}<i class="fas fa-arrow-down"></i>{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if market_data.sensex %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">SENSEX</h2>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-400 text-sm mb-2">Current Level</p>
+                            <p class="text-3xl font-bold text-white">{{ market_data.sensex.get('change', 'N/A') }}%</p>
+                        </div>
+                        <div class="text-5xl {% if market_data.sensex.get('change', 0) > 0 %}text-green-400{% else %}text-red-400{% endif %}">
+                            {% if market_data.sensex.get('change', 0) > 0 %}<i class="fas fa-arrow-up"></i>{% else %}<i class="fas fa-arrow-down"></i>{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Market Analysis -->
+            {% if insights.market_analysis %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Market Analysis</h2>
+                <p class="text-slate-300 leading-relaxed">
+                    {{ insights.market_analysis }}
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Sector Recommendations -->
+            {% if insights.sector_recommendations %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Recommended Sectors</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for sector in insights.sector_recommendations %}
+                    <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-400">
+                        <p class="text-slate-200">{{ sector }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Portfolio Implications -->
+            {% if insights.portfolio_implications %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Implications for Your Portfolio</h2>
+                <div class="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-500/30 rounded-lg p-6">
+                    <p class="text-slate-200 leading-relaxed">
+                        {{ insights.portfolio_implications }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            {% if insights.actions %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Suggested Actions</h2>
+                <div class="space-y-3">
+                    {% for action in insights.actions %}
+                    <div class="flex items-start bg-slate-700/50 p-4 rounded-lg">
+                        <div class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-4 flex-shrink-0">
+                            <i class="fas fa-check text-xs"></i>
+                        </div>
+                        <p class="text-slate-200">{{ action }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Risk Factors -->
+            {% if insights.risk_factors %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Risk Factors to Monitor</h2>
+                <div class="space-y-3">
+                    {% for risk in insights.risk_factors %}
+                    <div class="flex items-start bg-red-500/10 border-l-4 border-red-500 p-4 rounded-lg">
+                        <i class="fas fa-exclamation-triangle text-red-400 mr-3 mt-1 flex-shrink-0"></i>
+                        <p class="text-slate-200">{{ risk }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Key Metrics -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Key Market Metrics</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-slate-700/50 p-4 rounded-lg text-center">
+                        <p class="text-slate-400 text-sm mb-2">PE Ratio (NIFTY)</p>
+                        <p class="text-2xl font-bold text-white">24.5</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg text-center">
+                        <p class="text-slate-400 text-sm mb-2">Market Cap (₹Cr)</p>
+                        <p class="text-2xl font-bold text-white">350L</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg text-center">
+                        <p class="text-slate-400 text-sm mb-2">Dividend Yield</p>
+                        <p class="text-2xl font-bold text-white">1.8%</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg text-center">
+                        <p class="text-slate-400 text-sm mb-2">MF Inflows</p>
+                        <p class="text-2xl font-bold text-white">₹12K Cr</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Economic Calendar -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Upcoming Economic Events</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between bg-slate-700/50 p-4 rounded-lg">
+                        <div>
+                            <p class="text-white font-semibold">RBI Monetary Policy</p>
+                            <p class="text-slate-400 text-sm">Impact on interest rates and bonds</p>
+                        </div>
+                        <p class="text-slate-400 text-sm">Next Week</p>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-700/50 p-4 rounded-lg">
+                        <div>
+                            <p class="text-white font-semibold">Q3 Corporate Earnings</p>
+                            <p class="text-slate-400 text-sm">Strong earnings expected for IT and Pharma</p>
+                        </div>
+                        <p class="text-slate-400 text-sm">This Month</p>
+                    </div>
+                    <div class="flex items-center justify-between bg-slate-700/50 p-4 rounded-lg">
+                        <div>
+                            <p class="text-white font-semibold">Budget 2024-25</p>
+                            <p class="text-slate-400 text-sm">Tax changes and sector-specific announcements</p>
+                        </div>
+                        <p class="text-slate-400 text-sm">Feb 1, 2024</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-6">
+                <p class="text-yellow-200 text-sm">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    This market analysis is for informational purposes only and should not be considered investment advice. 
+                    Past performance is not indicative of future results. Please consult with your financial advisor before making investment decisions.
+                </p>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-slate-800 rounded-lg p-12 border border-slate-700 text-center card-shadow">
+            <i class="fas fa-chart-line text-6xl text-slate-600 mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Loading Market Insights</h2>
+            <p class="text-slate-400">Fetching latest market data and analysis...</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

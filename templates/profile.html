@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-900">Your Profile</h1>
+</div>
+
+<div class="grid md:grid-cols-3 gap-6">
+    <!-- User Info Card -->
+    <div class="md:col-span-2">
+        <div class="bg-white rounded-xl card-shadow p-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+            
+            <form id="profile-form" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                        <input type="text" name="first_name" value="{{ user.first_name or '' }}" 
+                               class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                        <input type="text" name="last_name" value="{{ user.last_name or '' }}" 
+                               class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                    <input type="email" value="{{ user.email }}" disabled
+                           class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                    <input type="text" value="{{ user.username }}" disabled
+                           class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Risk Tolerance</label>
+                        <select name="risk_tolerance" class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth">
+                            <option value="low" {% if user.risk_tolerance == 'low' %}selected{% endif %}>Low Risk</option>
+                            <option value="medium" {% if user.risk_tolerance == 'medium' %}selected{% endif %}>Medium Risk</option>
+                            <option value="high" {% if user.risk_tolerance == 'high' %}selected{% endif %}>High Risk</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Investment Horizon</label>
+                        <select name="investment_horizon" class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-smooth">
+                            <option value="">Select horizon</option>
+                            <option value="short" {% if user.investment_horizon == 'short' %}selected{% endif %}>Short Term (0-2 years)</option>
+                            <option value="medium" {% if user.investment_horizon == 'medium' %}selected{% endif %}>Medium Term (2-5 years)</option>
+                            <option value="long" {% if user.investment_horizon == 'long' %}selected{% endif %}>Long Term (5+ years)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-primary w-full">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Account Status Card -->
+    <div>
+        <div class="bg-white rounded-xl card-shadow p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Account Status</h3>
+            
+            <div class="space-y-4">
+                <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-sm text-gray-600 mb-1">Account Status</p>
+                    <p class="text-lg font-semibold text-blue-600">
+                        {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                    </p>
+                </div>
+                
+                {% if user.last_login %}
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-sm text-gray-600 mb-1">Last Login</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ user.last_login.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-sm text-gray-600 mb-1">Member Since</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ user.created_at.strftime('%B %d, %Y') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    fetch('/dashboard/api/update-profile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Profile updated successfully!');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+{% endblock %}

@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - InvestIQ{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="mb-8">
+    <div class="gradient-primary rounded-2xl card-shadow px-8 py-12 text-white">
+        <h1 class="text-4xl font-bold mb-2">Welcome back, {{ current_user.first_name or current_user.username }}!</h1>
+        <p class="text-blue-100 text-lg">Here's an overview of your investment portfolio and market insights</p>
+    </div>
+</div>
+
+<!-- Key Metrics Grid -->
+<div class="grid md:grid-cols-4 gap-6 mb-8">
+    <!-- Total Portfolio Value -->
+    <div class="bg-white rounded-xl card-shadow p-6 hover:shadow-lg transition-smooth">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-gray-600 font-semibold">Portfolio Value</h3>
+            <div class="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                <i class="fas fa-wallet text-lg"></i>
+            </div>
+        </div>
+        <p class="text-3xl font-bold text-gray-900" id="portfolio-value">Loading...</p>
+        <p class="text-sm text-green-600 mt-2" id="portfolio-change"><i class="fas fa-arrow-up"></i> Loading...</p>
+    </div>
+
+    <!-- Total Investments -->
+    <div class="bg-white rounded-xl card-shadow p-6 hover:shadow-lg transition-smooth">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-gray-600 font-semibold">Total Investments</h3>
+            <div class="bg-green-100 text-green-600 p-2 rounded-lg">
+                <i class="fas fa-chart-pie text-lg"></i>
+            </div>
+        </div>
+        <p class="text-3xl font-bold text-gray-900" id="investment-count">Loading...</p>
+        <p class="text-sm text-gray-500 mt-2"><i class="fas fa-info-circle"></i> Active portfolios</p>
+    </div>
+
+    <!-- Portfolio Growth Stage -->
+    <div class="bg-white rounded-xl card-shadow p-6 hover:shadow-lg transition-smooth">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-gray-600 font-semibold">Portfolio Growth Stage</h3>
+            <div id="growth-icon-bg" class="bg-blue-100 text-blue-600 p-2 rounded-lg transition-colors duration-300">
+                <i id="growth-icon" class="fas fa-seedling text-lg"></i>
+            </div>
+        </div>
+        <p class="text-3xl font-bold text-gray-900" id="growth-stage">Loading...</p>
+        <p class="text-sm text-gray-500 mt-2"><i class="fas fa-chart-line"></i> Based on portfolio value</p>
+    </div>
+
+    <!-- Risk Score -->
+    <div class="bg-white rounded-xl card-shadow p-6 hover:shadow-lg transition-smooth">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-gray-600 font-semibold">Risk Score</h3>
+            <div class="bg-orange-100 text-orange-600 p-2 rounded-lg">
+                <i class="fas fa-shield-alt text-lg"></i>
+            </div>
+        </div>
+        <p class="text-3xl font-bold text-gray-900" id="risk-score">Loading...</p>
+        <p class="text-sm text-gray-500 mt-2"><i class="fas fa-gauge"></i> Portfolio risk level</p>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="grid lg:grid-cols-3 gap-6 mb-8">
+    <!-- Portfolio Performance Chart -->
+    <div class="lg:col-span-2 bg-white rounded-xl card-shadow p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Portfolio Performance</h2>
+            <select id="performance-period"
+                class="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none"
+                onchange="loadPerformanceData(this.value)">
+                <option value="1M">1M</option>
+                <option value="3M">3M</option>
+                <option value="6M">6M</option>
+                <option value="1Y" selected>1Y</option>
+                <option value="ALL">All</option>
+            </select>
+        </div>
+        <canvas id="performanceChart"></canvas>
+    </div>
+
+    <!-- Asset Allocation Pie Chart -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Asset Allocation</h2>
+        <canvas id="allocationChart"></canvas>
+        <div class="mt-4 space-y-2 text-sm" id="allocation-list">
+            <p class="text-gray-500 text-center py-4">Loading allocation data...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity and Recommendations -->
+<div class="grid lg:grid-cols-2 gap-6 mb-8">
+    <!-- Curated Stock Picks -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-bullseye text-blue-600 mr-2"></i>Curated Stock Picks
+        </h2>
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Short-term Picks -->
+            <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                <h3 class="text-sm font-bold text-blue-800 uppercase mb-3 flex items-center">
+                    <i class="fas fa-bolt mr-2"></i>Short-term
+                </h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>Reliance Industries
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>HDFC Bank
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>TCS
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>Infosys
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>ITC
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>SBI
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>Power Grid
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-blue-400 mr-2"></i>Maruti Suzuki
+                    </li>
+                </ul>
+            </div>
+            <!-- Long-term Picks -->
+            <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                <h3 class="text-sm font-bold text-green-800 uppercase mb-3 flex items-center">
+                    <i class="fas fa-mountain mr-2"></i>Long-term
+                </h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>State Bank of India (SBI)
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>ICICI Bank
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>Larsen & Toubro (L&T)
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>Bharti Airtel
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>Axis Bank
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>Asian Paints
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>Nestle India
+                    </li>
+                    <li class="flex items-center text-sm text-gray-700">
+                        <i class="fas fa-caret-right text-green-400 mr-2"></i>Hindustan Unilever
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="bg-white rounded-xl card-shadow p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">
+            <i class="fas fa-robot text-blue-600 mr-2"></i>AI Recommendations
+        </h2>
+        <div class="space-y-4" id="ai-recommendations">
+            <p class="text-gray-500 text-center py-8">Loading recommendations...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="flex gap-4 flex-wrap">
+    <a href="/input-form" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Add Investment
+    </a>
+    <a href="{{ url_for('dashboard.portfolio') }}" class="btn-primary">
+        <i class="fas fa-chart-line mr-2"></i>Manage Portfolio
+    </a>
+    <a href="/insights" class="btn-secondary">
+        <i class="fas fa-newspaper mr-2"></i>Market Insights
+    </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // API base URL - adjust based on your backend
+    const API_BASE = '/api';
+    let performanceChart = null;
+    let allocationChart = null;
+
+    // Format currency
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
+    }
+
+    // Format percentage
+    function formatPercent(value) {
+        return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    }
+
+    // Load dashboard data
+    async function loadDashboardData() {
+        try {
+            const response = await fetch(`${API_BASE}/dashboard`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch dashboard data');
+            }
+
+            const data = await response.json();
+
+            // Update metrics
+            document.getElementById('portfolio-value').textContent = formatCurrency(data.portfolio_value);
+            document.getElementById('portfolio-change').innerHTML =
+                `<i class="fas fa-arrow-${data.portfolio_change >= 0 ? 'up' : 'down'}"></i> ${formatPercent(data.portfolio_change)} this month`;
+            document.getElementById('investment-count').textContent = data.investment_count;
+            // document.getElementById('investment-horizon').textContent = data.investment_horizon || "Medium";
+
+            // Calculate and update Portfolio Growth Stage
+            const portfolioValue = data.portfolio_value || 0;
+            let stage = "Starter";
+            let stageClass = "text-blue-600";
+            let iconClass = "fa-seedling";
+            let bgClass = "bg-blue-100";
+            let textClass = "text-blue-600";
+
+            if (portfolioValue >= 1000000) {
+                stage = "Mature";
+                iconClass = "fa-gem";
+                bgClass = "bg-purple-100";
+                textClass = "text-purple-600";
+            } else if (portfolioValue >= 100000) {
+                stage = "Growth Phase";
+                iconClass = "fa-layer-group"; // Or fa-chart-line
+                bgClass = "bg-green-100";
+                textClass = "text-green-600";
+            }
+
+            document.getElementById('growth-stage').textContent = stage;
+
+            // Update icon and colors
+            const iconBg = document.getElementById('growth-icon-bg');
+            const icon = document.getElementById('growth-icon');
+
+            // Reset classes
+            iconBg.className = `${bgClass} ${textClass} p-2 rounded-lg transition-colors duration-300`;
+            icon.className = `fas ${iconClass} text-lg`;
+
+            document.getElementById('risk-score').textContent = data.risk_score || "Medium";
+
+            // Load performance data
+            loadPerformanceData('1Y');
+
+            // Load asset allocation
+            loadAssetAllocation();
+
+            // Load AI recommendations
+            loadAIRecommendations();
+
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            showError('Failed to load dashboard data');
+        }
+    }
+
+    // Load performance data
+    async function loadPerformanceData(period) {
+        try {
+            const response = await fetch(`${API_BASE}/performance?period=${period}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch performance data');
+            }
+
+            const data = await response.json();
+
+            // Update performance chart
+            updatePerformanceChart(data.labels, data.values);
+
+        } catch (error) {
+            console.error('Error loading performance data:', error);
+            showError('Failed to load performance data');
+        }
+    }
+
+    // Update performance chart
+    function updatePerformanceChart(labels, values) {
+        const ctx = document.getElementById('performanceChart');
+        if (!ctx) return;
+
+        if (performanceChart) {
+            performanceChart.destroy();
+        }
+
+        performanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Portfolio Value',
+                    data: values,
+                    borderColor: '#0066cc',
+                    backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#0066cc',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { usePointStyle: true, padding: 20 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return `Portfolio Value: ${formatCurrency(context.raw)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: {
+                            callback: function (value) {
+                                return formatCurrency(value).replace('₹', '₹ ');
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // Load asset allocation
+    async function loadAssetAllocation() {
+        try {
+            const response = await fetch(`${API_BASE}/allocation`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch allocation data');
+            }
+
+            const data = await response.json();
+
+            // Update allocation chart
+            updateAllocationChart(data);
+
+        } catch (error) {
+            console.error('Error loading allocation data:', error);
+            showError('Failed to load allocation data');
+        }
+    }
+
+    // Update allocation chart
+    function updateAllocationChart(allocationData) {
+        const ctx = document.getElementById('allocationChart');
+        if (!ctx) return;
+
+        // Prepare data
+        const labels = Object.keys(allocationData);
+        const values = Object.values(allocationData);
+        const colors = ['#0066cc', '#00a8ff', '#7c3aed', '#d1d5db', '#10b981', '#f59e0b'];
+
+        // Update list
+        const allocationList = document.getElementById('allocation-list');
+        allocationList.innerHTML = '';
+
+        labels.forEach((label, index) => {
+            const percent = values[index];
+            const div = document.createElement('div');
+            div.className = 'flex justify-between';
+            div.innerHTML = `
+                <span class="text-gray-600">${label}</span>
+                <span class="font-semibold text-gray-900">${percent.toFixed(1)}%</span>
+            `;
+            allocationList.appendChild(div);
+        });
+
+        // Update chart
+        if (allocationChart) {
+            allocationChart.destroy();
+        }
+
+        allocationChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderColor: '#fff',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return `${context.label}: ${context.raw.toFixed(1)}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Recent transactions logic removed
+    async function loadAIRecommendations() {
+        try {
+            const response = await fetch(`${API_BASE}/recommendations`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch recommendations');
+            }
+
+            const recommendations = await response.json();
+            const container = document.getElementById('ai-recommendations');
+
+            if (recommendations.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No recommendations available yet. Analyze your portfolio first.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            recommendations.forEach(recommendation => {
+                const sentimentClass = {
+                    'positive': 'bg-green-50 border border-green-200',
+                    'negative': 'bg-red-50 border border-red-200',
+                    'neutral': 'bg-yellow-50 border border-yellow-200'
+                }[recommendation.sentiment] || 'bg-gray-50 border border-gray-200';
+
+                const badgeClass = {
+                    'positive': 'bg-green-200 text-green-800',
+                    'negative': 'bg-red-200 text-red-800',
+                    'neutral': 'bg-yellow-200 text-yellow-800'
+                }[recommendation.sentiment] || 'bg-gray-200 text-gray-800';
+
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-lg ${sentimentClass}`;
+                div.innerHTML = `
+                    <div class="flex items-start justify-between mb-2">
+                        <p class="font-semibold text-gray-900">${recommendation.title}</p>
+                        <span class="text-xs px-2 py-1 rounded ${badgeClass}">
+                            ${recommendation.sentiment.charAt(0).toUpperCase() + recommendation.sentiment.slice(1)}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-700">${recommendation.description}</p>
+                    ${recommendation.action_url ? `
+                        <a href="${recommendation.action_url}" class="inline-block mt-2 text-sm text-blue-600 hover:text-blue-700 font-semibold">
+                            Learn more →
+                        </a>
+                    ` : ''}
+                `;
+                container.appendChild(div);
+            });
+
+        } catch (error) {
+            console.error('Error loading recommendations:', error);
+            document.getElementById('ai-recommendations').innerHTML =
+                '<p class="text-gray-500 text-center py-8">Failed to load recommendations</p>';
+        }
+    }
+
+    // Show error message
+    function showError(message) {
+        console.error(message);
+
+    }
+
+    // Initialize dashboard when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        loadDashboardData();
+    });
+</script>
+{% endblock %}

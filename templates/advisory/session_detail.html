@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Advisory Session - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="{{ url_for('advisory.advisory_dashboard') }}" class="text-blue-400 hover:text-blue-300 mb-4 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+            <h1 class="text-4xl font-bold text-white mb-2">{{ session.title }}</h1>
+            <p class="text-slate-400">{{ session.session_type|replace('_', ' ')|title }} • {{ session.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+        </div>
+
+        <!-- Session Header Info -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Confidence Score</p>
+                <p class="text-3xl font-bold text-blue-400">{{ session.confidence_score|int }}%</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Risk Score</p>
+                <p class="text-3xl font-bold text-red-400">{{ session.risk_score|int }}%</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Opportunity Score</p>
+                <p class="text-3xl font-bold text-green-400">{{ session.opportunity_score|int }}%</p>
+            </div>
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <p class="text-slate-400 text-sm mb-2">Portfolio Value</p>
+                <p class="text-2xl font-bold text-white">₹{{ (session.portfolio_value_inr/100000)|round(1) }}L</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Left Column - Main Analysis -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Summary -->
+                {% if session.advisor_response %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Analysis Summary</h2>
+                    <p class="text-slate-300 leading-relaxed">
+                        {{ session.advisor_response.get('summary', 'Analysis summary not available') }}
+                    </p>
+                </div>
+
+                <!-- Key Findings -->
+                {% if session.key_findings %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Key Findings</h2>
+                    <div class="space-y-3">
+                        {% for finding in session.key_findings %}
+                        <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-400">
+                            <p class="text-slate-200"><i class="fas fa-lightbulb text-yellow-400 mr-2"></i>{{ finding }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Recommendations -->
+                {% if session.recommendations %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Recommendations</h2>
+                    <div class="space-y-3">
+                        {% for rec in session.recommendations %}
+                        <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-green-400">
+                            <p class="text-slate-200"><i class="fas fa-check-circle text-green-400 mr-2"></i>{{ rec }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Action Items -->
+                {% if session.action_items %}
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Action Items</h2>
+                    <div class="space-y-3">
+                        {% for item in session.action_items %}
+                        <div class="flex items-start bg-slate-700/50 p-4 rounded-lg">
+                            <input type="checkbox" class="mt-1 mr-4 w-4 h-4 rounded cursor-pointer">
+                            <p class="text-slate-200">{{ item }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Column - Sidebar Info -->
+            <div class="space-y-6">
+                <!-- Session Details -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h3 class="text-lg font-bold text-white mb-4">Session Details</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-slate-400 text-sm">Session Type</p>
+                            <p class="text-white font-semibold">{{ session.session_type|replace('_', ' ')|title }}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm">Status</p>
+                            <div class="flex items-center mt-1">
+                                <span class="inline-block w-2 h-2 rounded-full {% if session.status == 'active' %}bg-green-400{% elif session.status == 'completed' %}bg-blue-400{% else %}bg-slate-400{% endif %} mr-2"></span>
+                                <p class="text-white font-semibold">{{ session.status|capitalize }}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm">AI Model</p>
+                            <p class="text-white font-semibold">{{ session.ai_model }}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-sm">Created</p>
+                            <p class="text-white font-semibold">{{ session.created_at.strftime('%d %b %Y') }}</p>
+                        </div>
+                        {% if session.follow_up_date %}
+                        <div>
+                            <p class="text-slate-400 text-sm">Follow-up Date</p>
+                            <p class="text-white font-semibold">{{ session.follow_up_date.strftime('%d %b %Y') }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- User Profile at Time -->
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h3 class="text-lg font-bold text-white mb-4">User Profile</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400">Risk Profile</span>
+                            <span class="text-white font-semibold text-sm px-3 py-1 bg-slate-700 rounded">
+                                {{ session.user_risk_profile|title }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400">Time Horizon</span>
+                            <span class="text-white font-semibold text-sm px-3 py-1 bg-slate-700 rounded">
+                                {{ session.time_horizon|title }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    {% if session.status == 'active' %}
+                    <button onclick="archiveSession({{ session.id }})" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg transition-smooth">
+                        <i class="fas fa-archive mr-2"></i> Archive Session
+                    </button>
+                    {% endif %}
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-smooth">
+                        <i class="fas fa-download mr-2"></i> Export Report
+                    </button>
+                    <button class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg transition-smooth">
+                        <i class="fas fa-share mr-2"></i> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Resources -->
+        <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+            <h2 class="text-xl font-bold text-white mb-4">Related Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ url_for('advisory.market_insights') }}" class="bg-slate-700 hover:bg-slate-600 rounded-lg p-4 transition-smooth text-white">
+                    <i class="fas fa-chart-line text-blue-400 text-xl mb-2"></i>
+                    <p class="font-semibold">Market Insights</p>
+                    <p class="text-slate-400 text-sm">Current market trends</p>
+                </a>
+                <a href="{{ url_for('advisory.manage_goals') }}" class="bg-slate-700 hover:bg-slate-600 rounded-lg p-4 transition-smooth text-white">
+                    <i class="fas fa-target text-yellow-400 text-xl mb-2"></i>
+                    <p class="font-semibold">Financial Goals</p>
+                    <p class="text-slate-400 text-sm">Track your goals</p>
+                </a>
+                <a href="{{ url_for('advisory.tax_optimization') }}" class="bg-slate-700 hover:bg-slate-600 rounded-lg p-4 transition-smooth text-white">
+                    <i class="fas fa-calculator text-red-400 text-xl mb-2"></i>
+                    <p class="font-semibold">Tax Optimization</p>
+                    <p class="text-slate-400 text-sm">Save on taxes</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function archiveSession(sessionId) {
+    if (confirm('Archive this session?')) {
+        try {
+            const response = await fetch(`{{ url_for('advisory.archive_session', session_id='ID') }}`.replace('ID', sessionId), {
+                method: 'POST'
+            });
+            if (response.ok) {
+                alert('Session archived');
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+}
+</script>
+{% endblock %}

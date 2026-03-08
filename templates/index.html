@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+
+{% block title %}Home - InvestIQ{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Premium Design -->
+<section class="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50">
+    <!-- Animated Background Elements -->
+   
+
+    <!-- Navigation Spacer -->
+    <div class="relative z-10 pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Hero Content -->
+            <div class="text-center animate-on-scroll">
+                <!-- Premium Logo/Icon -->
+               
+
+                <!-- Main Heading -->
+                <h1 class="text-5xl md:text-7xl font-black text-slate-900 mb-8 leading-tight">
+                    <span class="bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 bg-clip-text text-transparent">
+                        InvestIQ
+                    </span>
+                    <br>
+                    <span class="text-3xl md:text-5xl font-semibold text-blue-700">
+                        AI-Powered Investment Intelligence
+                    </span>
+                </h1>
+
+                <p class="text-xl md:text-2xl text-slate-700 mb-12 max-w-3xl mx-auto leading-relaxed animate-on-scroll">
+                    Transform your investment strategy with cutting-edge AI technology. Get personalized recommendations,
+                    real-time market insights, and risk-adjusted portfolios that adapt to your financial goals.
+                    <br><br>
+                    <span class="text-lg font-medium text-slate-800">Join  investors who trust InvestIQ for smarter investing decisions.</span>
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-6 justify-center mb-16 animate-on-scroll">
+                    <a href="/insights" class="group btn-primary text-lg px-10 py-5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-2xl hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-search mr-3 group-hover:animate-bounce"></i>
+                        Get Started Free
+                        <span class="block text-sm font-normal opacity-90">No login required</span>
+                    </a>
+                    <a href="#features" class="btn-secondary text-lg px-10 py-5 bg-white/80 backdrop-blur-lg border border-blue-200 text-blue-700 hover:bg-white rounded-xl font-semibold transition-all duration-300">
+                        <i class="fas fa-play-circle mr-3"></i>
+                        Learn More
+                    </a>
+                </div>
+
+                <!-- Trust Indicators -->
+                <div class="flex flex-wrap justify-center items-center gap-8 text-blue-600 animate-on-scroll">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-shield-alt text-green-500"></i>
+                        <span class="text-sm font-medium">Bank-Level Security</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-chart-line text-blue-500"></i>
+                        <span class="text-sm font-medium">Real-Time Analytics</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-brain text-purple-500"></i>
+                        <span class="text-sm font-medium">AI-Powered Insights</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div class="w-6 h-10 border-2 border-blue-300 rounded-full flex justify-center">
+            <div class="w-1 h-3 bg-blue-500 rounded-full mt-2 animate-pulse"></div>
+        </div>
+    </div>
+</section>
+
+<!-- System Overview Section -->
+<section class="py-24 px-4 bg-gradient-to-br from-blue-50 via-white to-cyan-50 relative">
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill-rule="evenodd"%3E%3Cg fill="%230096ff" fill-opacity="0.03"%3E%3Ccircle cx="50" cy="50" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+
+    <div class="relative max-w-7xl mx-auto">
+        <div class="text-center mb-16 animate-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+                How <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">InvestIQ</span> Works
+            </h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Our AI-powered platform analyzes your financial profile and market data to create personalized investment strategies
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Overview Content -->
+            <div class="space-y-8 animate-on-scroll">
+                <div class="bg-white rounded-2xl p-8 shadow-xl border border-slate-200">
+                    <div class="flex items-start mb-6">
+                        <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl p-3 mr-4">
+                            <i class="fas fa-brain text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-2">Advanced AI Engine</h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                Our proprietary AI algorithms process millions of data points including market trends,
+                                economic indicators, company fundamentals, and sentiment analysis to generate accurate predictions.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <div class="text-3xl font-bold text-blue-600 mb-1">96.6%</div>
+                            <div class="text-sm text-slate-600">Investor Classification Accuracy</div>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <div class="text-3xl font-bold text-green-600 mb-1">98.8%</div>
+                            <div class="text-sm text-slate-600">Return Prediction R² Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-8 shadow-xl border border-slate-200">
+                    <div class="flex items-start mb-6">
+                        <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-3 mr-4">
+                            <i class="fas fa-shield-alt text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-2">Risk Management</h3>
+                            <p class="text-slate-600 leading-relaxed">
+                                Intelligent risk assessment with optional UPI transaction analysis for personalized
+                                risk profiling and portfolio optimization.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-slate-600">Portfolio Diversification</span>
+                            <span class="text-sm font-semibold text-green-600">Optimized</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-slate-600">Volatility Control</span>
+                            <span class="text-sm font-semibold text-green-600">Advanced</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-slate-600">Real-time Monitoring</span>
+                            <span class="text-sm font-semibold text-green-600">24/7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Demo Preview -->
+            <div class="animate-on-scroll">
+                <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-600 to-cyan-600 p-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                            <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                            <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                            <span class="text-white text-sm ml-4">InvestIQ - Portfolio Analysis</span>
+                        </div>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <!-- Mock Dashboard -->
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-blue-600">₹2.4L</div>
+                                <div class="text-xs text-slate-600">Portfolio Value</div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-green-600">+12.5%</div>
+                                <div class="text-xs text-slate-600">This Month</div>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-purple-600">Low</div>
+                                <div class="text-xs text-slate-600">Risk Level</div>
+                            </div>
+                        </div>
+
+                        <!-- Mock Chart -->
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-slate-900">Portfolio Performance</h4>
+                                <div class="flex space-x-2">
+                                    <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="h-32 bg-gradient-to-r from-blue-100 to-green-100 rounded-lg flex items-end justify-center">
+                                <div class="w-full h-20 bg-gradient-to-t from-blue-500 to-green-500 rounded-b-lg opacity-80"></div>
+                            </div>
+                        </div>
+
+                        <!-- Mock Recommendations -->
+                        <div class="space-y-3">
+                            <h4 class="font-semibold text-slate-900">AI Recommendations</h4>
+                            <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium text-green-800">BUY RELIANCE</span>
+                                    <span class="text-sm text-green-600">85% Confidence</span>
+                                </div>
+                                <div class="text-xs text-green-700 mt-1">Strong growth potential in energy sector</div>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-medium text-blue-800">HOLD TCS</span>
+                                    <span class="text-sm text-blue-600">78% Confidence</span>
+                                </div>
+                                <div class="text-xs text-blue-700 mt-1">Stable performance with dividend yield</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Demo Section -->
+<section id="demo" class="py-24 px-4 bg-gradient-to-br from-blue-50 to-cyan-50 relative overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl animate-float" style="animation-delay: -2s;"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto">
+        <div class="text-center mb-16 animate-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+                See InvestIQ in <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Action</span>
+            </h2>
+            <p class="text-xl text-slate-700 max-w-3xl mx-auto">
+                Watch how our AI transforms your investment approach in just a few simple steps
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="text-center animate-on-scroll">
+                <div class="relative mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-xl">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                        1
+                    </div>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Input Your Profile</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Tell us about your investment amount, risk tolerance, time horizon, and financial goals.
+                    No personal information required for basic analysis.
+                </p>
+                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-blue-200 shadow-lg">
+                    <div class="text-left space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Investment Amount:</span>
+                            <span class="text-slate-900 font-medium">₹50,000</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Risk Level:</span>
+                            <span class="text-green-600 font-medium">Medium</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Time Horizon:</span>
+                            <span class="text-blue-600 font-medium">3-5 Years</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="text-center animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="relative mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-xl">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                        2
+                    </div>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">AI Analysis</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Our AI processes market data, economic indicators, and your preferences to generate
+                    personalized investment recommendations with confidence scores.
+                </p>
+                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-green-200 shadow-lg">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-600">Analyzing Markets</span>
+                            <div class="w-16 h-2 bg-slate-200 rounded-full">
+                                <div class="w-12 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-600">Risk Assessment</span>
+                            <div class="w-16 h-2 bg-slate-200 rounded-full">
+                                <div class="w-14 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-600">Portfolio Optimization</span>
+                            <div class="w-16 h-2 bg-slate-200 rounded-full">
+                                <div class="w-10 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="text-center animate-on-scroll" style="animation-delay: 0.4s;">
+                <div class="relative mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                        3
+                    </div>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Get Results</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Receive detailed analysis with charts, risk factors, asset allocations, and AI explanations
+                    for your personalized investment strategy.
+                </p>
+                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-purple-200 shadow-lg">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg">
+                            <span class="text-green-700 font-medium">BUY RELIANCE</span>
+                            <span class="text-green-600 text-sm">₹2,450 • 85% Conf.</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
+                            <span class="text-blue-700 font-medium">HOLD HDFC</span>
+                            <span class="text-blue-600 text-sm">₹1,680 • 78% Conf.</span>
+                        </div>
+                        <div class="text-center mt-3">
+                            <span class="text-cyan-600 font-semibold">Expected Return: 12.5% p.a.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo CTA -->
+        <div class="text-center mt-16 animate-on-scroll">
+            <p class="text-slate-700 mb-8 text-lg">
+                Ready to see how InvestIQ can transform your investment strategy?
+            </p>
+            <a href="/login" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-2xl hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-rocket mr-3"></i>
+                Try  Analysis Now
+                <i class="fas fa-arrow-right ml-3"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-24 px-4 bg-gradient-to-b from-blue-50 to-white relative">
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%230096ff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+
+    <div class="relative max-w-7xl mx-auto">
+        <div class="text-center mb-20 animate-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+                Why Choose <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">InvestIQ</span>?
+            </h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Experience the future of investing with our comprehensive suite of AI-powered tools and insights
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Feature 1: AI Analysis -->
+            <div class="card-premium p-8 animate-on-scroll">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    <i class="fas fa-brain text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Advanced AI Analysis</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Our proprietary machine learning algorithms analyze market trends, sentiment data, and historical patterns
+                    to deliver highly accurate investment predictions and personalized recommendations.
+                </p>
+                <div class="flex items-center text-sm text-blue-600 font-medium">
+                    <i class="fas fa-arrow-right mr-2"></i>
+                    Learn More
+                </div>
+            </div>
+
+            <!-- Feature 2: Real-time Data -->
+            <div class="card-premium p-8 animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    <i class="fas fa-chart-area text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Real-Time Market Intelligence</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Stay ahead with live market data, instant portfolio tracking, and emerging investment opportunities.
+                    Our system processes millions of data points to identify optimal entry and exit points.
+                </p>
+                <div class="flex items-center text-sm text-green-600 font-medium">
+                    <i class="fas fa-arrow-right mr-2"></i>
+                    Learn More
+                </div>
+            </div>
+
+            <!-- Feature 3: Risk Management -->
+            <div class="card-premium p-8 animate-on-scroll" style="animation-delay: 0.4s;">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    <i class="fas fa-shield-alt text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Intelligent Risk Management</h3>
+                <p class="text-slate-600 leading-relaxed mb-6">
+                    Advanced risk assessment models combined with UPI transaction analysis provide comprehensive
+                    protection for your investments while maximizing potential returns.
+                </p>
+                <div class="flex items-center text-sm text-purple-600 font-medium">
+                    <i class="fas fa-arrow-right mr-2"></i>
+                    Learn More
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-20 px-4 bg-gradient-to-r from-blue-50 via-cyan-50 to-blue-50 relative overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-200/20 to-cyan-200/20"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-4 gap-8">
+            <div class="text-center animate-on-scroll">
+                <div class="text-5xl md:text-6xl font-black text-slate-900 mb-3 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                    Risk based
+                </div>
+                <p class="text-blue-700 font-medium">Investor Profiles</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="text-center animate-on-scroll" style="animation-delay: 0.1s;">
+                <div class="text-5xl md:text-6xl font-black text-slate-900 mb-3 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    Multi asset
+                </div>
+                <p class="text-green-700 font-medium">Allocation Model</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-green-500 to-emerald-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="text-center animate-on-scroll" style="animation-delay: 0.2s;">
+                <div class="text-5xl md:text-6xl font-black text-slate-900 mb-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    AI driven
+                </div>
+                <p class="text-purple-700 font-medium">Portfolio Insights</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+            <div class="text-center animate-on-scroll" style="animation-delay: 0.3s;">
+                <div class="text-5xl md:text-6xl font-black text-slate-900 mb-3 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                    24/7
+                </div>
+                <p class="text-amber-700 font-medium">AI Support Available</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-amber-500 to-orange-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-24 px-4 bg-white">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-20 animate-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+                How <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">InvestIQ</span> Works
+            </h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Get started in minutes with our streamlined process designed for modern investors
+            </p>
+        </div>
+
+        <div class="relative">
+            <!-- Connection Line -->
+            <div class="hidden md:block absolute top-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
+                <div class="h-0.5 bg-gradient-to-r from-blue-200 via-cyan-200 to-blue-200"></div>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-8 relative z-10">
+                <!-- Step 1 -->
+                <div class="text-center animate-on-scroll">
+                    <div class="relative mb-8">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-xl">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                            1
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Create Your Profile</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Sign up and complete your investor profile with goals, risk tolerance, and investment preferences.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="text-center animate-on-scroll" style="animation-delay: 0.2s;">
+                    <div class="relative mb-8">
+                        <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-xl">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                            2
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Set Investment Goals</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Define your investment amount, time horizon, and financial objectives for personalized recommendations.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="text-center animate-on-scroll" style="animation-delay: 0.4s;">
+                    <div class="relative mb-8">
+                        <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-xl">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                            3
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">AI Analysis & Recommendations</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Our AI analyzes markets, your profile, and UPI data to generate optimal investment strategies.
+                    </p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="text-center animate-on-scroll" style="animation-delay: 0.6s;">
+                    <div class="relative mb-8">
+                        <div class="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-xl">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                            4
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Invest & Monitor</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Execute trades and track performance with continuous AI monitoring and rebalancing recommendations.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA Section -->
+<section class="py-24 px-4 bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 relative overflow-hidden">
+    <div class="absolute inset-0">
+        <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl animate-float" style="animation-delay: -2s;"></div>
+    </div>
+
+    <div class="relative max-w-4xl mx-auto text-center animate-on-scroll">
+        <h2 class="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+            Ready to Transform Your <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Investment Strategy</span>?
+        </h2>
+        <p class="text-xl text-slate-700 mb-12 max-w-2xl mx-auto">
+            Join the investors who are already making smarter decisions with InvestIQ's AI-powered platform.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-6 justify-center">
+            <a href="/insights" class="group btn-primary text-lg px-12 py-5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-2xl hover:shadow-blue-500/25 transform hover:scale-105 transition-all duration-300">
+                <i class="fas fa-search mr-3 group-hover:animate-bounce"></i>
+                Get Started Free
+                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            <a href="/login" class="btn-secondary text-lg px-12 py-5 bg-white/80 backdrop-blur-lg border border-blue-200 text-blue-700 hover:bg-white rounded-xl font-semibold transition-all duration-300">
+                <i class="fas fa-sign-in-alt mr-3"></i>
+                Sign In to Account
+            </a>
+        </div>
+        <p class="text-blue-600/80 text-sm mt-8">
+            Start your smarter investing journey.
+        </p>
+    </div>
+</section>
+{% endblock %}

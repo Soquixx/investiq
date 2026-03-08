@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Rebalancing Advice - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="{{ url_for('advisory.advisory_dashboard') }}" class="text-blue-400 hover:text-blue-300 mb-4 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+            <h1 class="text-4xl font-bold text-white mb-2">Portfolio Rebalancing Advice</h1>
+            <p class="text-slate-400">AI-powered recommendations to optimize your asset allocation</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="bg-slate-800 rounded-lg p-8 border border-slate-700 text-center">
+            <div class="inline-block">
+                <div class="animate-spin mb-4">
+                    <i class="fas fa-spinner text-4xl text-blue-400"></i>
+                </div>
+                <p class="text-white text-lg">Generating rebalancing recommendations...</p>
+                <p class="text-slate-400 text-sm mt-2">Analyzing market conditions and your portfolio</p>
+            </div>
+        </div>
+
+        <!-- Results State -->
+        <div id="resultsState" class="hidden space-y-6">
+            <!-- Current vs Target Allocation -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Current Allocation</h2>
+                    <div id="currentAllocation" class="space-y-3">
+                        <p class="text-slate-400">Loading...</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                    <h2 class="text-xl font-bold text-white mb-4">Recommended Allocation</h2>
+                    <div id="recommendedAllocation" class="space-y-3">
+                        <p class="text-slate-400">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Findings -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Key Findings</h2>
+                <div id="keyFindings" class="space-y-3">
+                    <p class="text-slate-400">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Specific Recommendations</h2>
+                <div id="recommendations" class="space-y-3">
+                    <p class="text-slate-400">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Implementation Timeline -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Implementation Timeline</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center">
+                        <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                        <div>
+                            <p class="text-white font-semibold">Phase 1: Immediate (This Week)</p>
+                            <p class="text-slate-400 text-sm">Identify holdings to sell/buy</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                        <div>
+                            <p class="text-white font-semibold">Phase 2: Execution (Week 1-2)</p>
+                            <p class="text-slate-400 text-sm">Execute trades in batches to minimize impact</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                        <div>
+                            <p class="text-white font-semibold">Phase 3: Review (Week 3)</p>
+                            <p class="text-slate-400 text-sm">Verify allocation targets reached</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Items -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Next Steps</h2>
+                <div id="actionItems" class="space-y-3">
+                    <p class="text-slate-400">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        const response = await fetch('{{ url_for("advisory.rebalancing_advice") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get rebalancing advice');
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+            const analysis = data.analysis;
+
+            // Current allocation (placeholder - would come from portfolio service)
+            const currentAllocationHtml = Object.entries(analysis.allocation_percentage || {})
+                .map(([key, value]) => `
+                    <div class="flex items-center justify-between bg-slate-700/50 p-3 rounded">
+                        <span class="text-slate-300">${key.replace(/_/g, ' ').charAt(0).toUpperCase() + key.slice(1)}</span>
+                        <div class="flex items-center">
+                            <div class="w-24 bg-slate-600 rounded-full h-2 mr-3">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: ${value}%"></div>
+                            </div>
+                            <span class="text-white font-bold w-12 text-right">${value.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                `).join('');
+            document.getElementById('currentAllocation').innerHTML = currentAllocationHtml || '<p class="text-slate-400">No data available</p>';
+
+            // Recommended allocation (from AI)
+            const recommendedAllocationHtml = Object.entries(analysis.allocation_strategy || {})
+                .map(([key, value]) => `
+                    <div class="flex items-center justify-between bg-slate-700/50 p-3 rounded">
+                        <span class="text-slate-300">${key.replace(/_/g, ' ').charAt(0).toUpperCase() + key.slice(1)}</span>
+                        <div class="flex items-center">
+                            <div class="w-24 bg-slate-600 rounded-full h-2 mr-3">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: ${value}%"></div>
+                            </div>
+                            <span class="text-white font-bold w-12 text-right">${value.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                `).join('');
+            document.getElementById('recommendedAllocation').innerHTML = recommendedAllocationHtml || '<p class="text-slate-400">No recommendations</p>';
+
+            // Key findings
+            const findingsHtml = (analysis.key_findings || [])
+                .map(f => `
+                    <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-400">
+                        <p class="text-slate-200"><i class="fas fa-lightbulb text-yellow-400 mr-2"></i>${f}</p>
+                    </div>
+                `).join('');
+            document.getElementById('keyFindings').innerHTML = findingsHtml || '<p class="text-slate-400">No findings</p>';
+
+            // Recommendations
+            const recommendationsHtml = (analysis.recommendations || [])
+                .map(r => `
+                    <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-green-400">
+                        <p class="text-slate-200"><i class="fas fa-check-circle text-green-400 mr-2"></i>${r}</p>
+                    </div>
+                `).join('');
+            document.getElementById('recommendations').innerHTML = recommendationsHtml || '<p class="text-slate-400">No recommendations</p>';
+
+            // Action items
+            const actionsHtml = (analysis.action_items || [])
+                .map((a, i) => `
+                    <div class="flex items-start bg-slate-700/50 p-4 rounded-lg">
+                        <input type="checkbox" class="mt-1 mr-4 w-4 h-4 rounded cursor-pointer">
+                        <p class="text-slate-200">${a}</p>
+                    </div>
+                `).join('');
+            document.getElementById('actionItems').innerHTML = actionsHtml || '<p class="text-slate-400">No action items</p>';
+
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('resultsState').classList.remove('hidden');
+        } else {
+            throw new Error(data.error || 'Failed to get analysis');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('loadingState').innerHTML = `
+            <div class="text-center">
+                <i class="fas fa-exclamation-circle text-4xl text-red-400 mb-4"></i>
+                <p class="text-white text-lg">Error loading rebalancing advice</p>
+                <p class="text-slate-400 text-sm mt-2">${error.message}</p>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

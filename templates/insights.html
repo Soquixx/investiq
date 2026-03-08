@@ -1,0 +1,1330 @@
+{% extends "base.html" %}
+
+{% block title %}Market Insights - InvestIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern color scheme */
+    :root {
+        --sky-blue: #0ea5e9;
+        --sky-blue-light: #e0f2fe;
+        --sky-blue-medium: #7dd3fc;
+        --sky-blue-dark: #0284c7;
+        --white: #ffffff;
+        --gray-light: #f8fafc;
+        --gray-medium: #e2e8f0;
+        --gray-dark: #64748b;
+        --text-dark: #1e293b;
+        --text-medium: #475569;
+        --success: #22c55e;
+        --danger: #ef4444;
+    }
+
+    /* Make footer blue */
+    footer {
+        background-color: var(--sky-blue-dark) !important;
+        color: var(--white) !important;
+    }
+
+    footer a {
+        color: var(--sky-blue-light) !important;
+    }
+
+    /* Jump Animation for Cards */
+    @keyframes jumpAnimation {
+        0% {
+            transform: translateY(0) scale(1);
+        }
+
+        30% {
+            transform: translateY(-20px) scale(1.05);
+        }
+
+        50% {
+            transform: translateY(-10px) scale(1.03);
+        }
+
+        70% {
+            transform: translateY(-5px) scale(1.01);
+        }
+
+        100% {
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Center the market insights overview */
+    .market-overview {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 20px;
+    }
+
+    .market-title {
+        font-size: 36px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-blue-dark));
+        background-clip: text;
+        -webkit-background-clip: text;
+        /* chrome/safari */
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+
+    .market-subtitle {
+        font-size: 18px;
+        color: var(--sky-blue-dark);
+        font-weight: 500;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Thick Card Styling */
+    .market-card {
+        background: var(--white);
+        border-radius: 16px;
+        border: 3px solid var(--sky-blue-light);
+        box-shadow: 0 4px 20px rgba(14, 165, 233, 0.08);
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        height: 100%;
+    }
+
+    .market-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(14, 165, 233, 0.2);
+        border-color: var(--sky-blue);
+    }
+
+    .market-card.jumping {
+        animation: jumpAnimation 0.5s ease;
+        border-color: var(--sky-blue-dark);
+        z-index: 10;
+    }
+
+    .market-card.active {
+        background: linear-gradient(to bottom, var(--white) 0%, #f8fdff 100%);
+        border-color: var(--sky-blue-dark);
+    }
+
+    /* Card Header */
+    .card-header {
+        padding: 20px;
+        background: linear-gradient(135deg, var(--sky-blue-light), rgba(14, 165, 233, 0.1));
+        border-bottom: 2px solid var(--sky-blue-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--sky-blue), var(--sky-blue-dark));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .card-text h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--sky-blue-dark);
+        margin-bottom: 4px;
+    }
+
+    .card-text p {
+        font-size: 14px;
+        color: var(--gray-dark);
+    }
+
+    .card-badge {
+        padding: 6px 12px;
+        background: var(--sky-blue);
+        color: var(--white);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    /* Content Area */
+    .card-content {
+        padding: 20px;
+    }
+
+    /* Price Change Indicators */
+    .price-change {
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .price-change.up {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--success);
+    }
+
+    .price-change.down {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+    }
+
+
+    /* Sticky Ticker Bar - Image 1 Styling but Single Line */
+
+    .sticky-ticker-bar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: var(--white);
+        border-bottom: 1px solid #e0e3eb;
+        padding: 16px 0;
+        width: 100%;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    .ticker-scroll-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 80px;
+        /* VERY LARGE GAP like Image 2 */
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 0 40px;
+        scrollbar-width: none;
+    }
+
+    .ticker-scroll-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .ticker-scroll-wrapper {
+            justify-content: flex-start;
+            gap: 50px;
+            padding: 0 25px;
+        }
+    }
+
+    .ticker-item-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 18px;
+        /* LARGE FONT SIZE */
+        font-weight: 600;
+        /* Bold */
+        color: #131722;
+    }
+
+    /* First span: Index name */
+    .ticker-item-box>span:first-child {
+        color: #131722;
+        font-weight: 700;
+        /* Extra bold */
+        font-size: 18px;
+        /* Large */
+        white-space: nowrap;
+    }
+
+    /* Second span: Value with .value class */
+    .ticker-item-box>span.value {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        /* Bold numbers */
+        color: #131722;
+        font-size: 18px;
+        /* Large */
+    }
+
+    /* For the JavaScript to add ticker-change class */
+    .ticker-change {
+        font-size: 16px;
+        /* Large */
+        font-weight: 600;
+        color: #00A25B;
+        /* Green */
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin-left: 6px;
+    }
+
+    .ticker-change.down {
+        color: #F23645;
+        /* Red */
+    }
+
+    /* If you want even larger on desktop */
+    @media (min-width: 1024px) {
+        .ticker-scroll-wrapper {
+            gap: 90px;
+            /* Even larger on big screens */
+        }
+
+        .ticker-item-box {
+            font-size: 19px;
+        }
+
+        .ticker-item-box>span:first-child,
+        .ticker-item-box>span.value {
+            font-size: 19px;
+        }
+
+        .ticker-change {
+            font-size: 17px;
+        }
+    }
+
+
+    /* Grid Layout - 2x3 */
+    .market-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin: 30px auto;
+        max-width: 1200px;
+    }
+
+    @media (max-width: 1024px) {
+        .market-grid {
+            grid-template-columns: repeat(2, 1fr);
+            padding: 0 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .market-grid {
+            grid-template-columns: 1fr;
+            padding: 0 15px;
+        }
+    }
+
+    /* Data Items */
+    .data-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--gray-light);
+        transition: background 0.3s ease;
+    }
+
+    .data-item:hover {
+        background: var(--sky-blue-light);
+        border-radius: 8px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .data-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .item-symbol {
+        width: 40px;
+        height: 40px;
+        background: var(--sky-blue-light);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--sky-blue-dark);
+        font-size: 16px;
+    }
+
+    .item-details h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 2px;
+    }
+
+    .item-details p {
+        font-size: 12px;
+        color: var(--gray-dark);
+    }
+
+    .item-price {
+        text-align: right;
+    }
+
+    .item-price .price {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--sky-blue-dark);
+        margin-bottom: 4px;
+    }
+
+    /* Loading States */
+    .loading {
+        opacity: 0.7;
+    }
+
+    .loading::after {
+        content: '...';
+        animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+
+        0%,
+        20% {
+            content: '.';
+        }
+
+        40% {
+            content: '..';
+        }
+
+        60%,
+        100% {
+            content: '...';
+        }
+    }
+
+    /* Update Animation */
+    .updating {
+        animation: pulseUpdate 0.5s ease;
+    }
+
+    @keyframes pulseUpdate {
+        0% {
+            background: var(--white);
+        }
+
+        50% {
+            background: var(--sky-blue-light);
+        }
+
+        100% {
+            background: var(--white);
+        }
+    }
+
+    /* Live Status Indicator */
+    .live-status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--success);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Centered Market Overview -->
+    <div class="market-overview">
+        <h1 class="market-title">Market Insights Dashboard</h1>
+        <p class="market-subtitle">Real-time financial data powered by yFinance- Track stocks, indices, commodities
+            & investment opportunities</p>
+
+        <div class="live-status">
+            <span class="status-dot"></span>
+            <span style="color: var(--sky-blue-dark); font-weight: 600;">Live Market</span>
+            <span id="currentTime" class="text-muted"></span>
+        </div>
+    </div>
+
+    <!-- Sticky Market Ticker -->
+    <div class="sticky-ticker-bar">
+        <div class="ticker-scroll-wrapper">
+            <!-- NIFTY 50 -->
+            <div class="ticker-item-box" id="ticker-NIFTY50">
+                <span>NIFTY 50</span>
+                <span class="value">Loading...</span>
+            </div>
+
+            <!-- SENSEX -->
+            <div class="ticker-item-box" id="ticker-SENSEX">
+                <span>SENSEX</span>
+                <span class="value">Loading...</span>
+            </div>
+
+            <!-- BANK NIFTY -->
+            <div class="ticker-item-box" id="ticker-BANKNIFTY">
+                <span>BANK NIFTY</span>
+                <span class="value">Loading...</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 2x3 Market Grid -->
+    <div class="market-grid">
+        <!-- Stocks Card -->
+        <div class="market-card" id="stocks-card" data-finnhub-type="stocks">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">📊</div>
+                    <div class="card-text">
+                        <h3>Stocks</h3>
+                        <p>Live equity prices</p>
+                    </div>
+                </div>
+                <div class="card-badge">Live</div>
+            </div>
+            <div class="card-content">
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">R</div>
+                        <div class="item-details">
+                            <h4 id="stock1Name">RELIANCE</h4>
+                            <p id="stock1Info">NSE: RELIANCE • Vol: Loading</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="stock1Price">₹---</div>
+                        <span class="price-change" id="stock1Change">0.00%</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">H</div>
+                        <div class="item-details">
+                            <h4 id="stock2Name">HDFC BANK</h4>
+                            <p id="stock2Info">NSE: HDFCBANK • Vol: Loading</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="stock2Price">₹---</div>
+                        <span class="price-change" id="stock2Change">0.00%</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">I</div>
+                        <div class="item-details">
+                            <h4 id="stock3Name">INFOSYS</h4>
+                            <p id="stock3Info">NSE: INFY • Vol: Loading</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="stock3Price">₹---</div>
+                        <span class="price-change" id="stock3Change">0.00%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indices Card -->
+        <div class="market-card" id="indices-card" data-finnhub-type="indices">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">📈</div>
+                    <div class="card-text">
+                        <h3>Indices</h3>
+                        <p>Market benchmarks</p>
+                    </div>
+                </div>
+                <div class="card-badge">Live</div>
+            </div>
+            <div class="card-content">
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">N</div>
+                        <div class="item-details">
+                            <h4 id="index1Name">NIFTY 50</h4>
+                            <p id="index1Info">National Stock Exchange</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="index1Price">---</div>
+                        <span class="price-change" id="index1Change">0.00%</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">S</div>
+                        <div class="item-details">
+                            <h4 id="index2Name">SENSEX</h4>
+                            <p id="index2Info">Bombay Stock Exchange</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="index2Price">---</div>
+                        <span class="price-change" id="index2Change">0.00%</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">B</div>
+                        <div class="item-details">
+                            <h4 id="index3Name">BANK NIFTY</h4>
+                            <p id="index3Info">Banking Sector Index</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="index3Price">---</div>
+                        <span class="price-change" id="index3Change">0.00%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commodities Card -->
+        <div class="market-card" id="commodities-card" data-finnhub-type="commodities">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">💎</div>
+                    <div class="card-text">
+                        <h3>Commodities</h3>
+                        <p>Gold, Silver, Oil</p>
+                    </div>
+                </div>
+                <div class="card-badge">Live</div>
+            </div>
+            <div class="card-content">
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">G</div>
+                        <div class="item-details">
+                            <h4 id="commodity1Name">Gold (24k)</h4>
+                            <p id="commodity1Info">Per 10g • MCX</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="commodity1Price">₹---</div>
+                        <span class="price-change" id="commodity1Change">0.00%</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">S</div>
+                        <div class="item-details">
+                            <h4 id="commodity2Name">Silver</h4>
+                            <p id="commodity2Info">Per kg</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="commodity2Price">₹--</div>
+                        <span class="price-change" id="commodity2Change">0.00%</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">O</div>
+                        <div class="item-details">
+                            <h4 id="commodity3Name">Crude Oil</h4>
+                            <p id="commodity3Info">WTI • Per barrel</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price" id="commodity3Price">$---</div>
+                        <span class="price-change" id="commodity3Change">0.00%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIP Card -->
+        <div class="market-card" id="sip-card" data-finnhub-type="sip">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">📅</div>
+                    <div class="card-text">
+                        <h3>SIP Plans</h3>
+                        <p>Systematic Investment</p>
+                    </div>
+                </div>
+                <div class="card-badge">Recommended</div>
+            </div>
+            <div class="card-content">
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">W</div>
+                        <div class="item-details">
+                            <h4>Wealth Builder SIP</h4>
+                            <p>Min: ₹500/month • 5+ Years</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">12-14%p.a.</div>
+                        <span class="price-change up">Moderate to High</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">S</div>
+                        <div class="item-details">
+                            <h4>SIP Starter</h4>
+                            <p>3-5 years • ₹1,000/month</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">9-11% p.a.</div>
+                        <span class="price-change up">Moderate </span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">P</div>
+                        <div class="item-details">
+                            <h4>Secure SIP</h4>
+                            <p>2-3 years • ₹2,000/month</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">6-8% p.a.</div>
+                        <span class="price-change up">Low</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mutual Funds Card -->
+        <div class="market-card" id="mutualfunds-card" data-finnhub-type="mutualfunds">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">🏛️</div>
+                    <div class="card-text">
+                        <h3>Mutual Funds</h3>
+                        <p>Top performing funds</p>
+                    </div>
+                </div>
+                <div class="card-badge">Top Picks</div>
+            </div>
+            <div class="card-content">
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">N</div>
+                        <div class="item-details">
+                            <h4>Nippon Large Cap</h4>
+                            <p>Large Cap • Rating: AA</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">+13.4%</div>
+                        <span class="price-change up">NAV: ₹104.20</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">H</div>
+                        <div class="item-details">
+                            <h4>HDFC Balanced</h4>
+                            <p>Hybrid Fund • Medium Risk</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">+10.1%</div>
+                        <span class="price-change up">Exp: 0.65%</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">I</div>
+                        <div class="item-details">
+                            <h4>ICICI Prudential</h4>
+                            <p>Bluechip • High Growth</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">+12.2%</div>
+                        <span class="price-change up">Exp: 0.74%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IPO Card -->
+        <div class="market-card" id="ipo-card" data-finnhub-type="ipo">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon">📈</div>
+                    <div class="card-text">
+                        <h3>IPO Calendar</h3>
+                        <p>Upcoming & Live</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-content">
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">A</div>
+                        <div class="item-details">
+                            <h4>Tech nova Solutions Ltd</h4>
+                            <p> Open:Mar 12-14, • ₹1,850 Cr</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">₹420-445</div>
+                        <span class="price-change up">LIVE</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">X</div>
+                        <div class="item-details">
+                            <h4>FinEdge Digital Services Ltd</h4>
+                            <p>Opening soon • ₹1,200 Cr</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">Upcoming</div>
+                        <span class="price-change">Fintech</span>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="item-info">
+                        <div class="item-symbol">G</div>
+                        <div class="item-details">
+                            <h4>Green Energy Ltd</h4>
+                            <p>Expected this month • ₹800 Cr</p>
+                        </div>
+                    </div>
+                    <div class="item-price">
+                        <div class="price">Upcoming</div>
+                        <span class="price-change">Renewable</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    //  CONFIGURATION 
+    // Use your existing backend endpoints
+    const BACKEND_API = '/api';  // Your Flask backend
+
+    // Stock symbols for Indian market (use NSE format)
+    const STOCK_SYMBOLS = [
+        { symbol: 'RELIANCE', name: 'RELIANCE', elementId: 'stock1' },
+        { symbol: 'HDFCBANK', name: 'HDFC BANK', elementId: 'stock2' },
+        { symbol: 'INFY', name: 'INFOSYS', elementId: 'stock3' }
+    ];
+
+    const INDEX_SYMBOLS = [
+        { symbol: 'NIFTY50', name: 'NIFTY 50', elementId: 'index1' },
+        { symbol: 'SENSEX', name: 'SENSEX', elementId: 'index2' },
+        { symbol: 'BANKNIFTY', name: 'BANK NIFTY', elementId: 'index3' }
+    ];
+
+    // Ticker specific indices
+    const TICKER_INDICES = ['NIFTY50', 'SENSEX', 'BANKNIFTY'];
+
+    const COMMODITY_SYMBOLS = [
+        { symbol: 'GOLD', name: 'GOLD (24k)', elementId: 'commodity1' },
+        { symbol: 'SILVER', name: 'SILVER', elementId: 'commodity2' },
+        { symbol: 'CRUDE', name: 'CRUDE OIL', elementId: 'commodity3' }
+    ];
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Market Insights Dashboard Initialized');
+
+        // Initialize time
+        updateCurrentTime();
+        setInterval(updateCurrentTime, 1000);
+
+        // Initialize card click animations
+        initCardAnimations();
+
+        // Load ALL market data from YOUR backend
+        console.log('Loading real market data from backend...');
+        loadAllMarketData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadAllMarketData, 30000);
+    });
+
+    // CARD ANIMATIONS
+    function initCardAnimations() {
+        const cards = document.querySelectorAll('.market-card');
+
+        cards.forEach(card => {
+            card.addEventListener('click', function (e) {
+                // Skip if clicking on interactive elements
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+
+                // Add jump animation
+                this.classList.add('jumping');
+
+                const isActive = this.classList.contains('active');
+                cards.forEach(c => c.classList.remove('active'));
+
+                if (!isActive) {
+                    this.classList.add('active');
+
+                    // Refresh data for clicked card
+                    const cardType = this.getAttribute('data-finnhub-type');
+                    refreshCardData(cardType);
+                }
+
+                // Remove animation class after completion
+                setTimeout(() => {
+                    this.classList.remove('jumping');
+                }, 500);
+            });
+        });
+    }
+
+    //  LOAD REAL MARKET DATA 
+    async function loadAllMarketData() {
+        try {
+            console.log('Fetching ALL market data from backend...');
+
+            // Load stocks, indices, and commodities in parallel
+            await Promise.all([
+                loadStocksData(),
+                loadIndicesData(),
+                loadCommoditiesData()
+            ]);
+
+            // Update live ticker
+            updateTicker();
+
+            console.log('All market data loaded successfully');
+
+        } catch (error) {
+            console.error('Error loading market data:', error);
+            // Show error but don't fallback to demo - keep showing loading
+            showError('Temporarily unable to load live market data. Retrying...');
+        }
+    }
+
+    // STOCKS - REAL DATA 
+    async function loadStocksData() {
+        console.log('Loading REAL stock data...');
+
+        for (const stock of STOCK_SYMBOLS) {
+            try {
+                // Call YOUR backend endpoint which uses MarketDataService
+                const response = await fetch(`${BACKEND_API}/market-data/${stock.symbol}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'  // Include session cookies
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`Stock data for ${stock.symbol}:`, data);
+
+                    if (data && data.current_price !== undefined) {
+                        updateStockUI(stock.elementId, data, stock.name);
+                    } else {
+                        showStockLoading(stock.elementId, stock.name);
+                    }
+                } else {
+                    showStockLoading(stock.elementId, stock.name);
+                }
+
+                // Small delay between requests to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+            } catch (error) {
+                console.warn(`Failed to fetch ${stock.symbol}:`, error);
+                showStockLoading(stock.elementId, stock.name);
+            }
+        }
+    }
+
+    // ==================== INDICES - REAL DATA ====================
+    async function loadIndicesData() {
+        console.log('Loading REAL indices data...');
+
+        for (const index of INDEX_SYMBOLS) {
+            try {
+                const response = await fetch(`${BACKEND_API}/market-data/${index.symbol}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`Index data for ${index.symbol}:`, data);
+
+                    if (data && data.current_price !== undefined) {
+                        updateIndexUI(index.elementId, data, index.name);
+                    } else {
+                        showIndexLoading(index.elementId, index.name);
+                    }
+                } else {
+                    showIndexLoading(index.elementId, index.name);
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+            } catch (error) {
+                console.warn(`Failed to fetch ${index.symbol}:`, error);
+                showIndexLoading(index.elementId, index.name);
+            }
+        }
+    }
+
+    // ==================== COMMODITIES - REAL DATA ====================
+    async function loadCommoditiesData() {
+        console.log('Loading REAL commodities data...');
+
+        for (const commodity of COMMODITY_SYMBOLS) {
+            try {
+                const response = await fetch(`${BACKEND_API}/market-data/${commodity.symbol}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`Commodity data for ${commodity.symbol}:`, data);
+
+                    if (data && data.current_price !== undefined) {
+                        updateCommodityUI(commodity.elementId, data, commodity.name);
+                    } else {
+                        showCommodityLoading(commodity.elementId, commodity.name);
+                    }
+                } else {
+                    showCommodityLoading(commodity.elementId, commodity.name);
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+            } catch (error) {
+                console.warn(`Failed to fetch ${commodity.symbol}:`, error);
+                showCommodityLoading(commodity.elementId, commodity.name);
+            }
+        }
+    }
+
+    // ==================== UPDATE UI WITH REAL DATA ====================
+    function updateStockUI(elementId, data, name) {
+        const priceElement = document.getElementById(`${elementId}Price`);
+        const changeElement = document.getElementById(`${elementId}Change`);
+        const nameElement = document.getElementById(`${elementId}Name`);
+        const infoElement = document.getElementById(`${elementId}Info`);
+
+        if (priceElement && changeElement && nameElement) {
+            // Format price
+            const price = data.current_price.toFixed(2);
+            const changePercent = data.change_percent ? data.change_percent.toFixed(2) : 0;
+
+            // Update UI
+            priceElement.textContent = `₹${parseFloat(price).toLocaleString('en-IN')}`;
+            changeElement.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
+            changeElement.className = changePercent >= 0 ? 'price-change up' : 'price-change down';
+            nameElement.textContent = name;
+
+            // Update info
+            if (infoElement && data.volume) {
+                const volume = (data.volume / 1000000).toFixed(1);
+                infoElement.textContent = `NSE: ${data.symbol || name} • Vol: ${volume}M`;
+            }
+
+            // Add update animation
+            animateUpdate(priceElement);
+            animateUpdate(changeElement);
+
+            // Mark as real data
+            priceElement.setAttribute('data-source', 'real');
+            changeElement.setAttribute('data-source', 'real');
+        }
+    }
+
+    function updateIndexUI(elementId, data, name) {
+        const priceElement = document.getElementById(`${elementId}Price`);
+        const changeElement = document.getElementById(`${elementId}Change`);
+        const nameElement = document.getElementById(`${elementId}Name`);
+        const infoElement = document.getElementById(`${elementId}Info`);
+
+        if (priceElement && changeElement && nameElement) {
+            const price = data.current_price.toFixed(2);
+            const changePercent = data.change_percent ? data.change_percent.toFixed(2) : 0;
+
+            priceElement.textContent = parseFloat(price).toLocaleString('en-IN');
+            changeElement.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
+            changeElement.className = changePercent >= 0 ? 'price-change up' : 'price-change down';
+            nameElement.textContent = name;
+
+            if (infoElement) {
+                infoElement.textContent = data.company_name || 'Market Index';
+            }
+
+            animateUpdate(priceElement);
+            animateUpdate(changeElement);
+
+            priceElement.setAttribute('data-source', 'real');
+            changeElement.setAttribute('data-source', 'real');
+        }
+    }
+
+    function updateCommodityUI(elementId, data, name) {
+        const priceElement = document.getElementById(`${elementId}Price`);
+        const changeElement = document.getElementById(`${elementId}Change`);
+        const nameElement = document.getElementById(`${elementId}Name`);
+        const infoElement = document.getElementById(`${elementId}Info`);
+
+        if (priceElement && changeElement && nameElement) {
+            const price = data.current_price.toFixed(2);
+            const changePercent = data.change_percent ? data.change_percent.toFixed(2) : 0;
+
+            // Determine currency and format from backend response
+            if (data.currency === 'USD') {
+                priceElement.textContent = `$${parseFloat(price).toLocaleString('en-US')}`;
+            } else {
+                // Gold and Silver are already converted to INR per gram by our MarketDataService
+                // But UI labels say "Per 10g" for Gold and "Per kg" for Silver
+                let displayPrice = parseFloat(price);
+                if (elementId === 'commodity1') { // Gold
+                    displayPrice = displayPrice * 10;
+                } else if (elementId === 'commodity2') { // Silver
+                    displayPrice = displayPrice * 1000;
+                }
+                priceElement.textContent = `₹${displayPrice.toLocaleString('en-IN')}`;
+            }
+
+            changeElement.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent}%`;
+            changeElement.className = changePercent >= 0 ? 'price-change up' : 'price-change down';
+            nameElement.textContent = name;
+
+            if (infoElement) {
+                if (elementId === 'commodity1') {
+                    infoElement.textContent = 'Per  10 gram • Alpha Vantage'; // Unit fixed in backend
+                } else if (elementId === 'commodity2') {
+                    infoElement.textContent = ' 750 grams • Alpha Vantage';
+                } else {
+                    infoElement.textContent = 'WTI • Per barrel';
+                }
+            }
+
+            animateUpdate(priceElement);
+            animateUpdate(changeElement);
+
+            priceElement.setAttribute('data-source', 'real');
+            changeElement.setAttribute('data-source', 'real');
+        }
+    }
+
+    // ==================== LOADING STATES ====================
+    function showStockLoading(elementId, name) {
+        const priceElement = document.getElementById(`${elementId}Price`);
+        const changeElement = document.getElementById(`${elementId}Change`);
+        const nameElement = document.getElementById(`${elementId}Name`);
+        const infoElement = document.getElementById(`${elementId}Info`);
+
+        if (priceElement && changeElement && nameElement) {
+            priceElement.textContent = 'Loading...';
+            changeElement.textContent = '--.--%';
+            changeElement.className = 'price-change';
+            nameElement.textContent = name;
+
+            if (infoElement) {
+                infoElement.textContent = 'Fetching real-time data...';
+            }
+
+            priceElement.setAttribute('data-source', 'loading');
+            changeElement.setAttribute('data-source', 'loading');
+        }
+    }
+
+    function showIndexLoading(elementId, name) {
+        const priceElement = document.getElementById(`${elementId}Price`);
+        const changeElement = document.getElementById(`${elementId}Change`);
+        const nameElement = document.getElementById(`${elementId}Name`);
+
+        if (priceElement && changeElement && nameElement) {
+            priceElement.textContent = 'Loading...';
+            changeElement.textContent = '--.--%';
+            changeElement.className = 'price-change';
+            nameElement.textContent = name;
+
+            priceElement.setAttribute('data-source', 'loading');
+            changeElement.setAttribute('data-source', 'loading');
+        }
+    }
+
+    function showCommodityLoading(elementId, name) {
+        const priceElement = document.getElementById(`${elementId}Price`);
+        const changeElement = document.getElementById(`${elementId}Change`);
+        const nameElement = document.getElementById(`${elementId}Name`);
+
+        if (priceElement && changeElement && nameElement) {
+            priceElement.textContent = 'Loading...';
+            changeElement.textContent = '--.--%';
+            changeElement.className = 'price-change';
+            nameElement.textContent = name;
+
+            priceElement.setAttribute('data-source', 'loading');
+            changeElement.setAttribute('data-source', 'loading');
+        }
+    }
+
+    // ==================== LIVE TICKER ====================
+    async function updateTicker() {
+        for (const symbol of TICKER_INDICES) {
+            try {
+                const response = await fetch(`${BACKEND_API}/market-data/${symbol}`);
+                const data = await response.json();
+
+                if (data.error) continue;
+
+                // Format: NIFTY 50 25,000 ▲ 0.50%
+                const tickerEl = document.getElementById(`ticker-${symbol}`);
+                if (!tickerEl) continue;
+
+                const isUp = data.change >= 0;
+                const arrow = isUp ? '▲' : '▼';
+                const colorClass = isUp ? 'up' : 'down';
+                const sign = isUp ? '+' : '';
+
+                // Use current_price (from stocks API) or value (from indices API)
+                // This covers all bases to prevent NaN
+                const priceValue = data.current_price !== undefined ? data.current_price : (data.value !== undefined ? data.value : data.price);
+                // Ensure we have a valid number before formatting
+                const displayPrice = isNaN(parseFloat(priceValue)) ? '---' : parseFloat(priceValue).toLocaleString('en-IN');
+
+                tickerEl.innerHTML = `
+                    <span class="ticker-name">${data.symbol.replace('NIFTY50', 'NIFTY 50').replace('BANKNIFTY', 'BANK NIFTY').replace('NIFTYMIDCAP', 'NIFTY MIDCAP')}</span>
+                    <span class="ticker-value">${displayPrice}</span>
+                    <span class="ticker-change ${colorClass}">
+                        ${arrow} ${sign}${parseFloat(data.change_percent).toFixed(2)}%
+                    </span>
+                `;
+            } catch (err) {
+                console.error(`Ticker update failed for ${symbol}`, err);
+            }
+        }
+    }
+
+    function getPriceOrLoading(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) return 'Loading';
+
+        const source = element.getAttribute('data-source');
+        if (source === 'real') {
+            return element.textContent;
+        } else {
+            return 'Loading...';
+        }
+    }
+
+    function getChangeOrLoading(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) return '--.--%';
+
+        const source = element.getAttribute('data-source');
+        if (source === 'real') {
+            return element.textContent;
+        } else {
+            return '--.--%';
+        }
+    }
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function updateCurrentTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', {
+            hour12: true,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        const dateElement = document.getElementById('currentTime');
+        if (dateElement) {
+            dateElement.textContent = timeString;
+        }
+    }
+
+    function animateUpdate(element) {
+        element.classList.add('updating');
+        setTimeout(() => {
+            element.classList.remove('updating');
+        }, 500);
+    }
+
+    function refreshCardData(cardType) {
+        console.log(`Refreshing ${cardType} data...`);
+
+        switch (cardType) {
+            case 'stocks':
+                loadStocksData();
+                break;
+            case 'indices':
+                loadIndicesData();
+                break;
+            case 'commodities':
+                loadCommoditiesData();
+                break;
+            default:
+                // For SIP, Mutual Funds, IPO - keep as is (mock data as per your request)
+                console.log(`${cardType} uses static data`);
+        }
+    }
+
+    function showError(message) {
+        console.error(message);
+        // Optional: Add a subtle error indicator
+        const errorIndicator = document.createElement('div');
+        errorIndicator.className = 'fixed top-4 right-4 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-sm z-50';
+        errorIndicator.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(errorIndicator);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            errorIndicator.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

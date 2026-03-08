@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Tax Optimization - InvestIQ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <a href="{{ url_for('advisory.advisory_dashboard') }}" class="text-blue-400 hover:text-blue-300 mb-4 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+            <h1 class="text-4xl font-bold text-white mb-2">Tax Optimization Strategy</h1>
+            <p class="text-slate-400">Personalized tax-saving investment strategies for Indian investors</p>
+        </div>
+
+        {% if session and session.advisor_response %}
+        <div class="space-y-6">
+            <!-- Tax Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gradient-to-br from-red-600 to-red-700 rounded-lg p-6 card-shadow text-white">
+                    <p class="text-sm opacity-90">Estimated Tax Liability</p>
+                    <p class="text-3xl font-bold">₹{{ (session.advisor_response.get('tax_liability_estimate', 0))|int }}</p>
+                </div>
+                <div class="bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-lg p-6 card-shadow text-white">
+                    <p class="text-sm opacity-90">Potential Tax Savings</p>
+                    <p class="text-3xl font-bold">₹{{ (session.advisor_response.get('estimated_savings', 0))|int }}</p>
+                </div>
+                <div class="bg-gradient-to-br from-green-600 to-green-700 rounded-lg p-6 card-shadow text-white">
+                    <p class="text-sm opacity-90">Confidence Score</p>
+                    <p class="text-3xl font-bold">{{ session.confidence_score|int }}%</p>
+                </div>
+            </div>
+
+            <!-- Key Findings -->
+            {% if session.key_findings %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Key Findings</h2>
+                <div class="space-y-3">
+                    {% for finding in session.key_findings %}
+                    <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-blue-400">
+                        <p class="text-slate-200">{{ finding }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recommendations -->
+            {% if session.recommendations %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Tax-Saving Recommendations</h2>
+                <div class="space-y-3">
+                    {% for rec in session.recommendations %}
+                    <div class="bg-slate-700/50 p-4 rounded-lg border-l-4 border-green-400">
+                        <p class="text-slate-200">{{ rec }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Section 80C Investments -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Section 80C Investment Options</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h3 class="text-white font-semibold mb-2">ELSS (Equity Linked Saving Scheme)</h3>
+                        <p class="text-slate-300 text-sm mb-3">Diversified mutual fund with 3-year lock-in</p>
+                        <p class="text-blue-400 font-semibold">Deduction: Up to ₹1.5 lakhs/year</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h3 class="text-white font-semibold mb-2">Public Provident Fund (PPF)</h3>
+                        <p class="text-slate-300 text-sm mb-3">Low-risk government-backed savings scheme</p>
+                        <p class="text-blue-400 font-semibold">Deduction: Up to ₹1.5 lakhs/year</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h3 class="text-white font-semibold mb-2">Life Insurance</h3>
+                        <p class="text-slate-300 text-sm mb-3">Provide tax coverage and financial security</p>
+                        <p class="text-blue-400 font-semibold">Deduction: Premium amount</p>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h3 class="text-white font-semibold mb-2">Sukanya Samriddhi Yojana</h3>
+                        <p class="text-slate-300 text-sm mb-3">For girls' education & marriage (21 years)</p>
+                        <p class="text-blue-400 font-semibold">Deduction: Up to ₹1.5 lakhs/year</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax-Loss Harvesting -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Tax-Loss Harvesting Opportunities</h2>
+                <p class="text-slate-300 mb-4">
+                    Strategically sell securities at a loss to offset capital gains and reduce tax liability
+                </p>
+                <div class="bg-slate-700/50 p-4 rounded-lg">
+                    <p class="text-slate-200 mb-3">
+                        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                        Identify underperforming stocks/funds with embedded losses
+                    </p>
+                    <p class="text-slate-200 mb-3">
+                        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                        Sell to realize losses before year-end (December 31)
+                    </p>
+                    <p class="text-slate-200 mb-3">
+                        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                        Use losses to offset gains on other investments
+                    </p>
+                    <p class="text-slate-200">
+                        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                        Re-invest to maintain portfolio exposure if desired
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dividend Tax Optimization -->
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Dividend Income Management</h2>
+                <div class="space-y-4">
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h3 class="text-white font-semibold mb-2">Dividend Tax Rates (FY 2024-25)</h3>
+                        <ul class="text-slate-300 text-sm space-y-1">
+                            <li>• Domestic Company Dividends: 20% TDS + applicable slab rate</li>
+                            <li>• Foreign Dividends: 20% TDS</li>
+                            <li>• Dividend Tax Credit: Available for both types</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-700/50 p-4 rounded-lg">
+                        <h3 class="text-white font-semibold mb-2">Optimization Strategy</h3>
+                        <ul class="text-slate-300 text-sm space-y-1">
+                            <li>• Prefer growth funds over dividend funds in high tax bracket</li>
+                            <li>• Consider investing through spouse in lower tax bracket</li>
+                            <li>• Time dividend reinvestments strategically</li>
+                            <li>• Review dividend fund vs growth fund economics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Items -->
+            {% if session.action_items %}
+            <div class="bg-slate-800 rounded-lg p-6 border border-slate-700 card-shadow">
+                <h2 class="text-xl font-bold text-white mb-4">Action Items - Year-End Checklist</h2>
+                <div class="space-y-3">
+                    {% for item in session.action_items %}
+                    <div class="flex items-start bg-slate-700/50 p-4 rounded-lg">
+                        <input type="checkbox" class="mt-1 mr-4 w-4 h-4 rounded cursor-pointer">
+                        <p class="text-slate-200">{{ item }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Important Notes -->
+            <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-6">
+                <h3 class="text-blue-200 font-semibold mb-3">
+                    <i class="fas fa-info-circle mr-2"></i> Important Disclaimer
+                </h3>
+                <p class="text-blue-100 text-sm leading-relaxed mb-3">
+                    This tax advisory is for informational purposes only and should not be considered as professional tax advice. 
+                </p>
+                <p class="text-blue-100 text-sm">
+                    Please consult with a qualified Chartered Accountant (CA) or tax professional for:
+                </p>
+                <ul class="text-blue-100 text-sm mt-2 space-y-1 ml-4">
+                    <li>• Filing your income tax return (ITR)</li>
+                    <li>• Understanding specific tax implications for your situation</li>
+                    <li>• Compliance with tax regulations</li>
+                    <li>• Tax planning strategies</li>
+                </ul>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-slate-800 rounded-lg p-12 border border-slate-700 text-center card-shadow">
+            <i class="fas fa-hourglass-end text-6xl text-slate-600 mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Loading Tax Optimization Analysis</h2>
+            <p class="text-slate-400 mb-6">Please wait while we generate your personalized tax-saving strategy...</p>
+            <div class="inline-block">
+                <div class="animate-spin">
+                    <i class="fas fa-spinner text-4xl text-blue-400"></i>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
