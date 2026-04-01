@@ -11,9 +11,7 @@ load_dotenv()
 
 # Internal Imports
 from database.db import db
-
 from database.models import User
-
 from config import config
 
 def create_app(config_name='default'):
@@ -89,6 +87,11 @@ def create_app(config_name='default'):
 
     return app
 
+# This creates the 'app' object at the top level so 'gunicorn app:app' works.
+# It checks for a FLASK_CONFIG env var, otherwise defaults to 'default'.
+app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+
 if __name__ == "__main__":
-    app = create_app()
-    app.run(host='0.0.0.0', port=app.config.get('PORT', 5000), debug=app.config.get('DEBUG', False))
+    # Use the 'app' object created above
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=app.config.get('DEBUG', False))
