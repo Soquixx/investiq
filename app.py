@@ -38,7 +38,8 @@ def create_app(config_name='default'):
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id))
+        # Using session.get for SQLAlchemy 2.0+ compatibility
+        return db.session.get(User, int(user_id))
 
     # Register Blueprints
     from routes.main_routes import main_bp
@@ -87,11 +88,20 @@ def create_app(config_name='default'):
 
     return app
 
-# This creates the 'app' object at the top level so 'gunicorn app:app' works.
-# It checks for a FLASK_CONFIG env var, otherwise defaults to 'default'.
+# --- RENDER/PRODUCTION BOOTSTRAP ---
+
+# 1. Instantiate the app for Gunicorn (app:app)
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
+# 2. Critical: Ensure database tables exist before handling requests
+with app.app_context():
+    try:
+        db.create_all()
+        print("✓ Database tables initialized.")
+    except Exception as e:
+        print(f"✗ Database initialization failed: {e}")
+
 if __name__ == "__main__":
-    # Use the 'app' object created above
+    # Local development entry point
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=app.config.get('DEBUG', False))
